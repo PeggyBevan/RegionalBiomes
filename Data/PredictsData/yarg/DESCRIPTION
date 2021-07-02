@@ -1,0 +1,13 @@
+Package: yarg
+Type: Package
+Title: Pre-processing, analysis and visualisation of PREDICTS data
+Version: 0.1-14
+Date: 2016-05-18
+Author: The PREDICTS team
+Maintainer: Lawrence Hudson <lawrence.hudson08@imperial.ac.uk> and Tim Newbold <Tim.newbold@unep-wcmc.org>
+Description: Pre-processing, analysis and visualisation of PREDICTS data
+License: Don't know - does it even need a license if it is never
+        publically released?
+Depends: geosphere,rgdal,raster, ape, geiger, wordcloud, Hmisc
+NeedsCompilation: no
+Packaged: 2020-05-22 13:55:31 UTC; adrid

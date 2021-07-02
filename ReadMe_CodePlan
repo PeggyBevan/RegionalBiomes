@@ -1,0 +1,46 @@
+Data Structure - Chapter 1 final scripts
+
+Data//
+02_PREDICTSDivMetrics.csv
+  - created in script 01. 
+  - baseline dataset to use - do not edit
+03_PREDICTSModelData.csv
+ - created in script 01
+ - urban land use and 'cannot decide' land uses have been removed.
+ - extra variables added - land use (1-5), land use:use intensity (1-5), log richness, log abundance, common taxa
+
+
+Scripts//
+
+01_CreateSiteMetrics.R
+ - uses database.rds from rawdata folder in another directory
+ - groups observations from a study to one row to give species richness and total abundance
+ - choose which columns to retain
+ Output: 02_PREDICTSDivMetrics.csv
+ 
+02_PreProcessingModelData
+ - remove 'urban' and 'Cannot decide' land use types
+ - edit land use & use intensity factor names & add regional biome names, create landuse:use intensity factor for all 5 land use types
+ - create taxa variable
+ Output: 03_PREDICTSModelData.csv
+ 
+03_ExploreModelData
+ - use this script to create summary tables of data
+ - number of observations in each biome and regional biome
+ - number of observations in each land use type by biome and regional biome
+ - number of observations in each taxon group by biome and regional biome
+ - it would be useful to save these tables as CSVs that can be brought back in later to subset
+ 
+04_Global model and figs
+
+05_Biom1
+ - Subset biome 1 and do any data tidying (remove data-deficient areas)
+ - run model and model selection against species richness and abundance
+ - plot models
+ 
+06_Biome4
+
+07_Biome7
+
+
+Figs//
