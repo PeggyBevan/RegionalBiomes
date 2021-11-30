@@ -35,7 +35,7 @@ library(reshape2)
 # 2. Load Data --------------------------------------------------------------------
 
 # PREDICTS: Load dataframe from script 01. Each row is a site or block of a study, with biodiversity metrics e.g. total abundance. 
-BD<- read.csv("FinalScriptsAndData/Data/02_PREDICTSDivMetrics.csv", stringsAsFactors = T)
+BD<- read.csv("/Data/02_PREDICTSDivMetrics.csv", stringsAsFactors = T)
 dim(BD)
 # 22678 40
 
@@ -224,6 +224,6 @@ table(BD$CommonTaxon)
 
 
 #For now, lets save the dataset. 
-write.csv(BD, 'FinalScriptsAndData/Data/03_PREDICTSModelData.csv', row.names = F)
+write.csv(BD, 'Data/03_PREDICTSModelData.csv', row.names = F)
 #RDS is better as it saves level orders of factors
-saveRDS(BD, 'FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+saveRDS(BD, 'Data/03_PREDICTSModelData.rds')
