@@ -29,7 +29,7 @@ library(ggplot2)
 library(devtools)
 library(StatisticalModels)
 # 2. DATA -----------------------------------------------------------------
-data <- readRDS('FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData.rds')
 dim(data)
 # 3. SCRIPT ---------------------------------------------------------------
 
@@ -134,7 +134,7 @@ B7A <- Biomemodels1(data = Biome7[!is.na(Biome7$Use_intensity),], responseVar = 
 
 B7 <- rbind(B7sr, B7A)
 B7 <- rbind(B7LUsel, B7)
-write.csv(B7, "FinalScriptsAndData/Figs/B7ModSel.csv", row.names = F)
+write.csv(B7, "Figs/B7ModSel.csv", row.names = F)
 
 
 
@@ -211,7 +211,7 @@ fig5 <- ggplot(B7_LUUI3[B7_LUUI3$n > 25,], aes(x = factor(LU, levels = level_ord
         text = element_text(size = 25, colour = 'black'))
 
 fig5
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome7_LUUI3Realm.png")
+ggsave("Figs/attempt2/Biome7_LUUI3Realm.png")
 
 ##Biome7: Land Use * Realm (model 2)
 
@@ -239,7 +239,7 @@ fig6 <- ggplot(B7_LU[B7_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU)
   #+ ggtitle("Biome 07: Tropical & Subtropical Grasslands, Savannas & Shrublands")
 
 fig6
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome7_RealmLU.png")
+ggsave("Figs/attempt2/Biome7_RealmLU.png")
 
 
 # whole biome, just land use 
@@ -276,7 +276,7 @@ figa <- ggplot(temp.df, aes(x = factor(LandUse, levels = level_order_LU), y = y,
   ggtitle("Biome 07: Tropical & Subtropical Grasslands, Savannahs & Shrublands")
 
 figa
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome7LU.png')
+ggsave(filename = 'Figs/attempt2/Biome7LU.png')
 
 
 #whole biome, land use * use intensity
@@ -316,7 +316,7 @@ figb <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
   ggtitle("Biome 07: Tropical & Subtropical Grasslands, Savannahs & Shrublands")
 
 figb
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome7LU_UI.png')
+ggsave(filename = 'Figs/attempt2/Biome7LU_UI.png')
 
 
 
@@ -377,7 +377,7 @@ fig9a <- ggplot(B7_LUUI3_a[B7_LUUI3_a$n > 25,], aes(x = factor(LU, levels = leve
         text = element_text(size = 25, colour = 'black'))
 
 fig9a
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome7_LUUI3_abRealm.png")
+ggsave("Figs/attempt2/Biome7_LUUI3_abRealm.png")
 
 
 
@@ -407,7 +407,7 @@ figB7LU <- ggplot(B7_LU_a[B7_LU_a$n > 25,], aes(x = factor(LU, levels = level_or
   )
 
 figB7LU
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome7_LU_aRealm.png")
+ggsave("Figs/attempt2/Biome7_LU_aRealm.png")
 
 
-write.csv(Biome7, "FinalScriptsAndData/Figs/Maps/Biome7.csv")
+write.csv(Biome7, "Figs/Maps/Biome7.csv")
