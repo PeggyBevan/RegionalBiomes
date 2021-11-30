@@ -29,7 +29,7 @@ library(devtools)
 library(StatisticalModels)
 library(wesanderson)
 # 2. DATA -----------------------------------------------------------------
-data <- readRDS('FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData.rds')
 dim(data)
 # 3. SCRIPT ---------------------------------------------------------------
 
@@ -215,7 +215,7 @@ fig3 <- ggplot(B4_LUUI3[B4_LUUI3$n > 25,], aes(x = factor(LU, levels = level_ord
         text = element_text(size = 25, colour = 'black'))
 
 fig3
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_LU_UI3Realm.png")
+ggsave("Figs/attempt2/Biome4_LU_UI3Realm.png")
 
 
 ## Biome 4: Land Use * Realm
@@ -251,7 +251,7 @@ fig4 <- ggplot(B4_LU[B4_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU)
   #+ggtitle("Biome 04: Temperate Broadleaf & Mixed Forests")
 
 fig4
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_RealmLU.png")
+ggsave("Figs/attempt2/Biome4_RealmLU.png")
 
 
 #whole biome, just land use 
@@ -288,7 +288,7 @@ figa <- ggplot(temp.df, aes(x = factor(LandUse, levels = level_order_LU), y = y,
   ggtitle("Biome 04: Temperate Broadleaf and Mixed Forests")
 
 figa
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome4LU.png')
+ggsave(filename = 'Figs/attempt2/Biome4LU.png')
 
 
 #whole biome, land use * use intensity
@@ -328,7 +328,7 @@ figb <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
   ggtitle("Biome 04: Temperate Broadleaf and Mixed Forests")
 
 figb
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome4LU_UI.png')
+ggsave(filename = 'Figs/attempt2/Biome4LU_UI.png')
 
 
 # Abundance ---------------------------------------------------------------
@@ -414,7 +414,7 @@ fig7a <- ggplot(B4_LUUI3_a[B4_LUUI3_a$n > 25,], aes(x = factor(LU, levels = leve
         text = element_text(size = 25, colour = 'black'))
 
 fig7a
-ggsave("FinalScriptsAndData/Figs/attempt2/Fig07_Biome4_LU_UI_3_abundanceRealm.png")
+ggsave("Figs/attempt2/Fig07_Biome4_LU_UI_3_abundanceRealm.png")
 
 
 
@@ -444,7 +444,7 @@ figB4LU <- ggplot(B4_LU_a[B4_LU_a$n > 25,], aes(x = factor(LU, levels = level_or
   )
 
 figB4LU
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_LU_aRealm.png")
+ggsave("Figs/attempt2/Biome4_LU_aRealm.png")
 
 
 
@@ -485,7 +485,7 @@ figc <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 figc
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome4LU_UI_abund.png')
+ggsave(filename = 'Figs/attempt2/Biome4LU_UI_abund.png')
 
 
 
@@ -586,11 +586,11 @@ fig8 <- ggplot(B1_LU3_tr[B1_LU3_tr$n > 5,], aes(x = factor(LU, levels = c("Prima
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 fig8
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_LU3_RealmTaxa.png")
+ggsave("Figs/attempt2/Biome4_LU3_RealmTaxa.png")
 
 
 
-write.csv(Biome4, "FinalScriptsAndData/Figs/Maps/Biome4.csv", row.names = F)
+write.csv(Biome4, "Figs/Maps/Biome4.csv", row.names = F)
 
 
 
