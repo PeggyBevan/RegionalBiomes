@@ -35,7 +35,7 @@ library(data.table) #rbindlist()
 
 
 # 2. DATA -----------------------------------------------------------------
-data <- readRDS('FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData.rds')
  dim(data)
 # 3. SCRIPT ---------------------------------------------------------------
 # 3.1 Prep and subset data ------------------------------------------------
@@ -194,7 +194,7 @@ B1A <- Biomemodels1(data = Biome1[!is.na(Biome1$Use_intensity),], responseVar = 
 
 B1 <- rbind(B1sr, B1A)
 B1 <- rbind(B1LUsel, B1)
-write.csv(B1, "FinalScriptsAndData/Figs/B1ModSel.csv", row.names = F)
+write.csv(B1, "Figs/B1ModSel.csv", row.names = F)
 
 
 # b0 <- StatisticalModels::GLMER(modelData = Biome1[!is.na(Biome1$Use_intensity),], responseVar = "LogRichness",
@@ -312,7 +312,7 @@ figa <- ggplot(temp.df, aes(x = factor(LandUse), y = y, ymax = upper, ymin = low
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 figa
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome1LU.png')
+ggsave(filename = 'Figs/attempt2/Biome1LU.png')
 
 
 #Overall biome Land Use * Use intensity
@@ -352,7 +352,7 @@ figb <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 figb
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome1LU_UI.png')
+ggsave(filename = 'Figs/attempt2/Biome1LU_UI.png')
 
 
 # by realm, Land Use
@@ -405,7 +405,7 @@ fig2 <- ggplot(B1_LU[B1_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU)
         text = element_text(size = 25, colour = 'black'))
   
 fig2
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome1_RealmLU.png")
+ggsave("Figs/attempt2/Biome1_RealmLU.png")
 
 #colours = Afrotropic = '#DD8D29', Indo-Malay = '#E2D200', Neotropic = '#46ACC8'
 
@@ -457,7 +457,7 @@ fig1 <- ggplot(B1_LUUI3[B1_LUUI3$n > 25,], aes(x = factor(LU, levels = level_ord
         text = element_text(size = 25, colour = 'black'))
 
 fig1
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome1_LU_UI3Realm.png")
+ggsave("Figs/attempt2/Biome1_LU_UI3Realm.png")
 
 
 
@@ -571,7 +571,7 @@ fig7 <- ggplot(B1_LUUI3_a[B1_LUUI3_a$n > 25,], aes(x = factor(LU, levels = level
         text = element_text(size = 25, colour = 'black'))
 
 fig7
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome1_LUUI3_abRealm.png")
+ggsave("Figs/attempt2/Biome1_LUUI3_abRealm.png")
 
 #Biome 1 LUUI
 
@@ -610,7 +610,7 @@ figc <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 figc
-ggsave(filename = 'FinalScriptsAndData/Figs/attempt2/Biome1LU_UI_abund.png')
+ggsave(filename = 'Figs/attempt2/Biome1LU_UI_abund.png')
 
 
 ##Land Use - Abundance 
@@ -661,7 +661,7 @@ fig8 <- ggplot(B1_LU_a[B1_LU_a$n > 20,], aes(x = factor(LU, levels = level_order
         )
 
 fig8
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome1_LU_aRealm.png")
+ggsave("Figs/attempt2/Biome1_LU_aRealm.png")
 
 
 
@@ -764,6 +764,6 @@ fig8 <- ggplot(B1_LU3_tr[B1_LU3_tr$n > 5,], aes(x = factor(LU, levels = c("Prima
   ggtitle("Biome 01: Tropical and Subtropical Moist Broadleaf Forest")
 
 fig8
-ggsave("FinalScriptsAndData/Figs/attempt2/Biome1_LU3_RealmTaxa.png")
+ggsave("Figs/attempt2/Biome1_LU3_RealmTaxa.png")
 
-write.csv(Biome1, "FinalScriptsAndData/Figs/Maps/Biome1.csv", row.names = F)
+write.csv(Biome1, "Figs/Maps/Biome1.csv", row.names = F)
