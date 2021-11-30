@@ -151,8 +151,8 @@ f1 <- merge_v(f1, j = ~ Biome)
 f1 <- fix_border_issues(f1)
 #conditional formatting
 f1 <- bg(f1, bg = '#cccccc', i = ~ n_studies < 1, j = 2:8)
-#save_as_docx(f1, path = 'FinalScriptsAndData/testtable.docx')
-save_as_image(f1, path = 'FinalScriptsAndData/Figs/01_RBSamplingEffort.png')
+#save_as_docx(f1, path = 'testtable.docx')
+save_as_image(f1, path = 'Figs/01_RBSamplingEffort.png')
 
 
 # 5. Land Use ----------------------------------------------------------------
@@ -234,7 +234,7 @@ f4 <- align(f4, i = 1:2, part = 'header', align = 'left')
 f4 <- theme_vanilla(f4)
 f4 <- fix_border_issues(f4)
 f4
-save_as_image(f4, 'FinalScriptsAndData/Figs/03_TaxaSamplingEffort.png')
+save_as_image(f4, 'Figs/03_TaxaSamplingEffort.png')
 
 #Some regional biomes are only represented by one or two taxa groups, meaning they probably aren't representative of the RB as a whole. 
 # --we have to assume that the representation of taxa are proportional to the number of taxa in that RB. 
@@ -261,7 +261,7 @@ f5 <- flextable(g[2:5])
 f5 <- theme_vanilla(f5)
 f5 <- merge_v(f5, j = ~ Biome)
 f5 <- fix_border_issues(f5)
-save_as_image(f5, 'FinalScriptsAndData/Figs/04_FinalList.png')
+save_as_image(f5, 'Figs/04_FinalList.png')
 
 
 
@@ -284,12 +284,12 @@ ecoregs <- ecoregs %>%
 
 
 #save ecoregs 
-write.csv(ecoregs, "FinalScriptsAndData/Data/04_RBsummary.csv", row.names = F)
+write.csv(ecoregs, "Data/04_RBsummary.csv", row.names = F)
 
 #for appendix 
 
 ap.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
-write.csv(ap.ecos, "FinalScriptsAndData/Figs/RBcoverage.csv", row.names = F)
+write.csv(ap.ecos, "Figs/RBcoverage.csv", row.names = F)
 
 ap.ecos[ap.ecos$n_sites == 0,]
 
