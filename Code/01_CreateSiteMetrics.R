@@ -60,5 +60,5 @@ dim(sites)
 #The data contain 480 sources, 666 studies and 22678 sites
 
 # save this data frame so you can come back to it #SAVED ON 13/01/2021 
-write.csv(sites, 'FinalScriptsAndData/Data/02_PREDICTSDivMetrics.csv', row.names = F)
+write.csv(sites, 'Data/02_PREDICTSDivMetrics.csv', row.names = F)
 
