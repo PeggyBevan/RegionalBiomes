@@ -25,10 +25,10 @@ library(tidyr) #spread()
 
 # Data --------------------------------------------------------------------
 
-BD <- readRDS('FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+BD <- readRDS('Data/03_PREDICTSModelData.rds')
 
 # The TNC egoregion map has the same ecoregions as those in the PREDICTS databse. I got it from here: http://maps.tnc.org/gis_data.html
-tnc_ecoregions <- readOGR(dsn = 'FinalScriptsAndData/Data/terr-ecoregions-TNC', layer = 'tnc_terr_ecoregions')
+tnc_ecoregions <- readOGR(dsn = 'Data/terr-ecoregions-TNC', layer = 'tnc_terr_ecoregions')
 # 814 features, 16 fields
 
 
