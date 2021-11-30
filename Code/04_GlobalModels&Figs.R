@@ -19,7 +19,7 @@ library(performance)
 library(devtools)
 library(dplyr)
 # load PREDICTGLMER function 
-source('FinalScriptsAndData/Code/05_PredictGLMERfunction.R')
+source('Code/PredictGLMERfunction.R')
 
 
 install_github(repo = "timnewbold/predicts-demo",subdir = "predictsFunctions")
@@ -35,7 +35,7 @@ library(StatisticalModels)
 
 #change this to RDS so it keeps stuff
 
-data <- readRDS('FinalScriptsAndData/Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData.rds')
 dim(data)
 
 # Code --------------------------------------------------------------------
@@ -58,7 +58,7 @@ n_sites <- n_distinct(data$SSBS)
 
 # Selecting ecoregions ----------------------------------------------------
 
-ecoregs <- read.csv("FinalScriptsAndData/Data/04_RBsummary.csv", stringsAsFactors = T)
+ecoregs <- read.csv("Data/04_RBsummary.csv", stringsAsFactors = T)
 
 ecoregs <- subset(ecoregs, Biome != "Tundra")
 ecoregs <- subset(ecoregs, Biome != "Flooded Grasslands & Savannas")
@@ -242,7 +242,7 @@ RB_LUth.1_Aresults <- runmodels1(data = data_LUth.1, responseVar = 'LogAbund', L
 
 #for upgrade appendix:
 Globalmodsel <- rbind(GlobalLUsel, RB_LUth.1_Sresults, RB_LUth.1_Aresults)
-write.csv(Globalmodsel, "FinalScriptsAndData/Figs/GlobalModSel.csv", row.names = F)
+write.csv(Globalmodsel, "Figs/GlobalModSel.csv", row.names = F)
 
 RB_LUth.5_Sresults <- runmodels1(data = data_LUth.5, responseVar = 'LogRichness') 
 RB_LUth.5_Aresults <- runmodels1(data = data_LUth.5, responseVar = 'LogAbund')
@@ -366,7 +366,7 @@ ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
   ylab(expression(paste(Delta, "AIC"))) +
   scale_y_continuous(limits = c(-1200,0))
 
-ggsave("FinalScriptsAndData/Figs/dAIC2_sites.png")
+ggsave("Figs/dAIC2_sites.png")
 
 
 
@@ -431,7 +431,7 @@ fig1 <- ggplot(preds1, aes(x = factor(LU, levels = level_order), y = y, ymax = u
         panel.grid.minor = element_blank(),
         strip.background = element_blank())
 fig1
-ggsave("FinalScriptsAndData/Figs/attempt2/Fig07_LandUseBiome.png")
+ggsave("Figs/attempt2/Fig07_LandUseBiome.png")
 
 # Figure 2//Model 2 -------------------------------------------------------
 ##figure 2 / model 2
@@ -675,14 +675,14 @@ fig4 <- ggplot(preds4plot[preds4plot$n > 10], aes(x = factor(LU, levels = level_
 
 fig4
 
-ggsave('FinalScriptsAndData/Figs/06_GraphBiome.png', plot = fig1, height = 10, width = 12)
+ggsave('Figs/06_GraphBiome.png', plot = fig1, height = 10, width = 12)
 # Fig X. Predicted species richnes change compared to the reference level at primary vegetation (PV) under different land use scenarios for each biome. Each point is the predicted value with error bars. Red points are those where n < 1 so should be discounted. Land Use scenarios are Primary vegetation (PV), Secondary Vegetation (SV), Cropland (Cr), Pasture (Pa) and Plantation Forest (PF)
 
-ggsave('FinalScriptsAndData/Figs/07_GraphRegBiome.png', plot = fig2, width = 12)
+ggsave('Figs/07_GraphRegBiome.png', plot = fig2, width = 12)
 # Fig X. Predicted species richness change compared to the reference level at primary vegetation for each region in each biome. Land Use scenarios are Primary vegetation (PV), Secondary Vegetation (SV), Cropland (Cr), Pasture (Pa) and Plantation Forest (PF)
 
-ggsave('FinalScriptsAndData/Figs/08_GraphTaxaBiome.png', plot = fig3, width = 10)
+ggsave('Figs/08_GraphTaxaBiome.png', plot = fig3, width = 10)
 # Fig X. Predicted species richness change compared to the reference level at primary vegetation for each taxa. Land Use scenarios are Primary vegetation (PV), Secondary Vegetation (SV), Cropland (Cr), Pasture (Pa) and Plantation Forest (PF)
 
-ggsave('FinalScriptsAndData/Figs/09_GraphBiome01Taxa.png', plot = fig4, width = 12, height = 6)
+ggsave('Figs/09_GraphBiome01Taxa.png', plot = fig4, width = 12, height = 6)
 # Fig X. Predicted species richness change compared to the reference level at primary vegetation for each taxon group in every regional biome of Tropical Moist Forest (Biome 01. Land Use scenarios are Primary vegetation (PV), Secondary Vegetation (SV), Cropland (Cr), Pasture (Pa) and Plantation Forest (PF)
