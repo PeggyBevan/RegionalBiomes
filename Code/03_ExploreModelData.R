@@ -1,18 +1,25 @@
 # 03_ExploreData
+# Author: Peggy Bevan
+# Date: 20/01/2021
 
-#4. Regional biomes
+#In this script:
+# Packages
+# Data
+# Script
+  #Regional biomes
 #  - creating ecoregs - list of all existing RBs & how many studies are in BD for each one
-#  - save 01_RBSamplingEffort.png - the table that shows representation across regional biomes in the predicts data base - before anything has been removed.
-# 5. Land Use
-# - create a table to show land use sampling effort, including 'human-dominated' - the sum of pasture, cropland and plantation forest.
-# - this has been saved as 05_RBLandUseSummary.csv
-# 6. Taxon Representation
+#  - save 01_RBSamplingEffort.png - the table that shows representation across regional biomes in the predicts data base - before anything has been removed. Table S1
+  #Land Use
+# - create a table to show land-use sampling effort, including 'human-dominated' - the sum of pasture, cropland and plantation forest.
+# - saved as 05_RBLandUseSummary.csv
+  #Taxon Representation
 # - exploring sampling effort by taxon, in each biome, realm and regional biome
 # - create table '03_TaxaSamplingEffort.png'
-# 7. Summary table of RBs & Save
+  #Summary table of RBs & Save
 # - create summary table of the final regional biomes left - because i have not removed much this is basically a summary of RBs. '04_FinalList.png'
-
-# i want a csv with columns biome, biome number, realm, RB code, n_studies, n_sources, N_sites, n_taxa, n_ all land use types, total ecoregions, proportion of ecoregions covered.
+  #Regional Biome csv
+# - save a csv with columns biome, biome number, realm, RB code, n_studies, n_sources, N_sites, n_taxa, n_ all land use types, total ecoregions, proportion of ecoregions covered. and number of observations in each taxa. Saved to data/04_RBsummary.csv
+# - used later on to determine best sample size threshold for regional biome inclusion criteria. 
 
 
 # Packages ----------------------------------------------------------------
@@ -93,7 +100,7 @@ ecoregs<-arrange(ecoregs, Biome_num, Realm)
 #remove rock & ice and inland water
 ecoregs <- filter(ecoregs, Biome_num<=14)
 
-# 4. Regional Biomes ------------------------------------------------------
+# Regional Biomes ------------------------------------------------------
 
 # calculate number of studies etc. for each RB
 for (i in (1:nrow(ecoregs))) {
@@ -153,9 +160,10 @@ f1 <- fix_border_issues(f1)
 f1 <- bg(f1, bg = '#cccccc', i = ~ n_studies < 1, j = 2:8)
 #save_as_docx(f1, path = 'testtable.docx')
 save_as_image(f1, path = 'Figs/01_RBSamplingEffort.png')
+save_as_docx(f1, pr_section = prop_section(page_size(orient = 'landscape')), path = 'Figs/01_RBSamplingEffort.docx')
 
 
-# 5. Land Use ----------------------------------------------------------------
+# Land Use ----------------------------------------------------------------
 
 LU <- BD %>% count(RB_tnc, LandUse) %>% 
   spread(LandUse, n)
@@ -202,26 +210,22 @@ Taxa <- BD %>% count(RB_tnc, CommonTaxon) %>% spread(CommonTaxon, n)
 ecoregs<- merge(ecoregs, Taxa, by.x = 'RB_tnc', all.x = TRUE)
 ecoregs$Vertebrate <- rowSums(ecoregs[,c(22,24,25)], na.rm = T)
 
-f4 <- flextable(ecoregs[,])
-
-f4 <- f4[, c(4,2,3,1, 5:10)]
-f <- arrange(f, Biome_num)
-f4 <- flextable(f[,2:10])
+f4 <- ecoregs[,c(5,4,1,3,20:26)]
+f4 <- arrange(f4, Biome_num)
+f4[is.na(f4)] = 0 
+f4 <- flextable(f4[,c(1,2,5:10)])
 f4 <- merge_v(f4, j = ~ Biome)
-
-f.2 <- tidyr::gather(f, 'Common Taxa', 'n', 5:10)
-
 
 typology <- data.frame(
   col_keys = f4$col_keys,
   type = c("Regional Biome", "Regional Biome",
-           "Regional Biome", 'Number of samples of each taxa', 
+           'Number of samples of each taxa', 
            'Number of samples of each taxa', 
            'Number of samples of each taxa', 
            'Number of samples of each taxa',
            'Number of samples of each taxa', 
            'Number of samples of each taxa'),
-  what = c("Biome", "Realm", "Code", 
+  what = c("Biome", "Realm", 
            'Plant', "Fungi",  
            'Herptile', 'Invertebrate', 
            'Bird', 'Mammal'),
@@ -235,9 +239,10 @@ f4 <- theme_vanilla(f4)
 f4 <- fix_border_issues(f4)
 f4
 save_as_image(f4, 'Figs/03_TaxaSamplingEffort.png')
+save_as_docx(f4, path = 'Figs/03_TaxaSamplingEffort.docx')
 
 #Some regional biomes are only represented by one or two taxa groups, meaning they probably aren't representative of the RB as a whole. 
-# --we have to assume that the representation of taxa are proportional to the number of taxa in that RB. 
+# --we have to assume that the representation of taxa are proportional to the number of taxa in that RB.
 
 # 7. Summary table of RBs & Save -------------------------------------------------
 
@@ -265,6 +270,7 @@ save_as_image(f5, 'Figs/04_FinalList.png')
 
 
 
+# Save summary csv --------------------------------------------------------
 ##create threshold variables 
 
 ecoregs <- ecoregs %>%
@@ -286,12 +292,7 @@ ecoregs <- ecoregs %>%
 #save ecoregs 
 write.csv(ecoregs, "Data/04_RBsummary.csv", row.names = F)
 
-#for appendix 
+#for supplementary material
 
-ap.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
-write.csv(ap.ecos, "Figs/RBcoverage.csv", row.names = F)
-
-ap.ecos[ap.ecos$n_sites == 0,]
-
-
-
+sp.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
+write.csv(sp.ecos, "Figs/RBcoverage.csv", row.names = F)
