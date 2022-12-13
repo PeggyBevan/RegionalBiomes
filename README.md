@@ -1,9 +1,16 @@
 # RegionalBiomes
 Analysing biodiversity responses to land use change across regional biomes
 
+How to use this repository
+- If you want to go straight to running models, it is possible to start in script 3 and load 03_PREDICTSModelData.rds
+
 Data Structure
 
 Data//
+PredictsData
+- original database from predicts website 
+terr-ecoregions-TNX
+The TNC egoregion map. It has the same ecoregions as those in the PREDICTS database. I got it from here: http://maps.tnc.org/gis_data.html
 
 
 02_PREDICTSDivMetrics.csv
@@ -12,7 +19,7 @@ Data//
 
 
 03_PREDICTSModelData.csv
- - created in script 01
+ - created in script 02
  - urban land use and 'cannot decide' land uses have been removed.
  - extra variables added - land use (1-5), land use:use intensity (1-5), log richness, log abundance, common taxa
 
@@ -29,7 +36,7 @@ Scripts//
  - remove 'urban' and 'Cannot decide' land use types
  - edit land use & use intensity factor names & add regional biome names, create landuse:use intensity factor for all 5 land use types
  - create taxa variable
- Output: 03_PREDICTSModelData.csv
+ Output: 03_PREDICTSModelData.csv ; 03_PREDICTSModelData.rds
  
 03_ExploreModelData
  - use this script to create summary tables of data

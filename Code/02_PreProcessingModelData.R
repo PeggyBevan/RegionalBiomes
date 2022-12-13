@@ -71,7 +71,7 @@ BD <- BD %>%
                                'Antarctica' = 'AN'
     )
   ) %>%
-  #remove where land use is unknown.
+  #remove rows where land use is unknown.
   filter(Predominant_land_use!='Cannot decide') %>%
   # remove sites on urban land - not enough data
   filter(Predominant_land_use!='Urban') %>%
@@ -83,7 +83,7 @@ unique(BD$RB_tnc)
 # create land use variable
 BD <- BD %>%
   dplyr::mutate(
-    LandUse = recode(Predominant_land_use,
+    LandUse = recode(Predominant_land_use, #grouping secondary veg into one category
                      'Primary vegetation' = 
                        'Primary Vegetation',
                      'Intermediate secondary vegetation' = 
@@ -98,7 +98,7 @@ BD <- BD %>%
     LandUse = na_if(LandUse, "Cannot decide"),
     Use_intensity = na_if(Use_intensity, "Cannot decide")
   )
-# put into order
+# put into order so Primary Veg is reference level
 BD$LandUse <- factor(BD$LandUse, c('Primary Vegetation', 'Secondary Vegetation', 'Plantation forest', 'Cropland', 'Pasture')) %>%
   droplevels()
 
@@ -140,9 +140,10 @@ BD <- BD %>%
   LogAbund = log(Total_abundance+1),
   LogRichness = log(Species_richness+1)
   ) %>%
-  #use intensity/land use interaction variables
+  #class 'Light' use intensity as 'minimal'
   mutate(Use_intensity = recode_factor(Use_intensity,
                                          'Light use' = 'Minimal use')) %>%
+  #combine land use and use intensity variables
   mutate(LU_UI = ifelse(is.na(Use_intensity), NA, paste0(LandUse, '_', Use_intensity)),
          LU_UI_2 = ifelse(is.na(Use_intensity), NA, paste0(LandUse2, '_', Use_intensity)),
          LU_UI_3 = ifelse(is.na(Use_intensity), NA, paste0(LandUse3, '_', Use_intensity)),
@@ -159,6 +160,7 @@ BD$LU_UI_3 <- as.factor(BD$LU_UI_3)
 BD$LU_UI_4 <- as.factor(BD$LU_UI_4)
 BD$LU_UI_5 <- as.factor(BD$LU_UI_5)
 
+#re-order levels to Primary minimal is reference level
 BD$LU_UI <- factor(BD$LU_UI, c("Primary Vegetation_Minimal use", "Primary Vegetation_Intense use", "Secondary Vegetation_Minimal use", "Secondary Vegetation_Intense use", "Plantation forest_Minimal use", "Plantation forest_Intense use","Cropland_Minimal use","Cropland_Intense use", "Pasture_Minimal use", "Pasture_Intense use")) %>%
   droplevels()
 BD$LU_UI_2 <- factor(BD$LU_UI_2, c("Natural Vegetation_Minimal use", "Natural Vegetation_Intense use", "Agriculture_Minimal use", "Agriculture_Intense use")) %>%
