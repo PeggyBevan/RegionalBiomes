@@ -31,6 +31,8 @@ library(ggplot2)
 library(performance)
 library(devtools)
 library(dplyr)
+library(flextable) #saving output
+library(officer) #to support flextable
 # load PREDICTGLMER function 
 source('Code/PredictGLMERfunction.R')
 
@@ -84,8 +86,8 @@ runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
                              "R2Conditional" = R2$conditional,
                              "n" = nrow,
                              "n_RB" = n_distinct(data$RB_tnc))
-  modelresults$deltaAIC = modelresults$AIC - modelresults$AIC[1]
-  
+  modelresults$deltaAIC = modelresults$AIC - max(modelresults$AIC)
+  modelresults = arrange(modelresults, AIC)
   return(modelresults)
 }
 
@@ -143,7 +145,7 @@ data_LUth.25 <- filter(data, RB_tnc %in% RB_LUth.25$RB_tnc)
 data_LUth.50 <- filter(data, RB_tnc %in% RB_LUth.50$RB_tnc)
 
 names(ecoregs)
-# Run Models --------------------------------------------------------------
+# Select model structure --------------------------------------------------------------
 
 #check random effects structure
 r0 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
@@ -204,7 +206,18 @@ GlobalLUsel <- data.frame(Dataset = "Global_LUth1",
                       n = nrow(data_LUth.1),
                       n_RB = n_distinct(data_LUth.1$RB_tnc)
 )
-GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - GlobalLUsel$AIC[1]
+GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - max(GlobalLUsel$AIC)
+
+#create supp table 3
+#small_border = fp_border(color="black", width = 2)
+
+GlobalLUsel = arrange(GlobalLUsel, AIC)
+TS3 = flextable(GlobalLUsel[,c(1:4,8,9,6,7,5,10)])
+TS3 <- theme_vanilla(TS3)
+TS3 <- fix_border_issues(TS3)
+TS3
+save_as_image(TS3, 'Output/TableS3_LandUseVar.png')
+save_as_docx(TS4, path = 'Output/TableS3_LandUseVar.docx')
 
 ##Adding biome and realm fixed effects
 m0 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
@@ -308,20 +321,27 @@ write.csv(globalmods, 'output/Global_compareSampleSize.csv', row.names = F)
 # Plot Figure SX ----------------------------------------------------------
 globalmods$Fixef = factor(globalmods$Fixef, levels = c("LandUse", "LandUse:Realm", "LandUse:Biome", "LandUse:RegionalBiome"))
 
-facet_labels = c("A", "B")
-ggplot(globalmods, aes(x = Fixef, y = deltaAIC, group = Dataset)) +
-  geom_point(aes(color = Dataset), position = position_dodge(width = 0.6), size = 3) + 
-  facet_wrap(~Response, scales = "free_y") +
-  theme_classic() +
-  theme(strip.text = element_blank(),
-        legend.position = "none",
-        text = element_text(size = 20, colour = 'black')) +
-  scale_x_discrete(name = 'Fixed Effects', labels = c('LU', 'LU:Realm', 'LU:Biome', 'LU:RB')) +
-  ylab(expression(paste(Delta, "AIC"))) +
-  scale_y_continuous(limits = c(-1250,0))
+#just going to present in a table rather than figure.
+globalmods = globalmods %>%
+  mutate(minSampleSize = recode_factor(Dataset,
+                                   'data'=0,
+                                   "data_LUth.1" = 1,
+                                   "data_LUth.5" = 5,
+                                   "data_LUth.25" = 25,
+                                   "data_LUth.50" = 50)
+  )
 
-
-
+small_border = fp_border(color="black", width = 2)
+tiny_border = fp_border(color="black", width = 1.5)
+TS4 = flextable(globalmods[,c(11,2,3,8,9,6,7,5,10)])
+TS4 <- merge_v(TS4, j = ~ minSampleSize)
+TS4 <- theme_vanilla(TS4)
+TS4 <- fix_border_issues(TS4)
+TS4 <- hline(TS4, border = small_border, i = c(8,16,24,32))
+TS4 <- hline(TS4, border = tiny_border, i = c(4,12,20,28, 36))
+TS4
+save_as_image(TS4, 'Output/TableS4_SampleSize.png')
+save_as_docx(TS4, path = 'Output/TableS4_SampleSize.docx')
 
 # Hold-out Model ----------------------------------------------------------------
 #Running a hold-out model. Run the model 100 times, each time removed 5% of studies.
@@ -360,7 +380,14 @@ sample_results_df = rbindlist(sample_results)
 # Save results
 write.csv(sample_results_df, file = "Output/holdout_results_LUth25.csv", row.names = F)
 
+#need to give each model in each iteration a rank, based on deltaAIC. 
+#so rank 1 will be the model with the most support
 
+head(sample_results_df)
+sample_results_df = sample_results_df %>%
+  arrange(AIC) %>%
+  group_by(sample, Response) %>%
+  mutate(ranking = row_number())
 
 
 # Plot Fig.3 --------------------------------------------------------------
@@ -368,19 +395,30 @@ write.csv(sample_results_df, file = "Output/holdout_results_LUth25.csv", row.nam
 # Fixing order of factors
 sample_results_df$Fixef = factor(sample_results_df$Fixef, levels = c("LandUse", "LandUse:Realm", "LandUse:Biome", "LandUse:RegionalBiome"))
 # Boxplot of deltaAIC
-facet_labels = c("A", "B")
+sample_results_df$Response = factor(sample_results_df$Response, levels = c('LogRichness', 'LogAbund'))
+
+ggplot(test) +
+  geom_bar(aes(x = ranking, fill = Fixef)) +
+  facet_wrap(~Response, scales = "free_y")
+
+
+labels = c('(A) Species Richness', '(B) Total Abundance')
+names(labels) <- c("LogRichness", "LogAbund")
+
 ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
-  geom_point(aes(shape = Fixef), position = "jitter") + 
-  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
-  facet_wrap(~Response, scales = "free_y") +
+  #geom_point(aes(colour = ranking), position = 'jitter') +
+  geom_boxplot(outlier.shape = NA) +
+  facet_wrap(~Response, scales = "free_y", labeller = labeller(Response = labels)) +
   theme_classic() +
-  theme(strip.text = element_blank(),
-        legend.position = "none",
-        text = element_text(size = 20, colour = 'black')) +
+  theme(strip.text.x = element_text(size = 14, hjust = 0),
+        strip.background = element_blank(),
+        text = element_text(size = 20, colour = 'black'),
+        axis.title.x = element_text(vjust = -0.8, margin = margin(t = 0, r = 0, b = 20, l = 0)),
+        axis.text = element_text(size = 15, colour = 'black',margin = margin(t = 10, r = 0, b = 20, l = 0)),
+        axis.text.x = element_text(vjust = -0.5, margin = margin(t = 0, r = 0, b = 20, l = 0)),
+        )+
   scale_x_discrete(name = 'Fixed Effects', labels = c('LU', 'LU:Realm', 'LU:Biome', 'LU:RB')) +
-  ylab(expression(paste(Delta, "AIC"))) +
+  ylab(expression(paste("\n",Delta, "AIC"))) +
   scale_y_continuous(limits = c(-1200,0))
 
-
-
-ggsave("Figs/dAIC2_sites.png")
+ggsave("Figs/Fig3_90pcstudies_25.png")
