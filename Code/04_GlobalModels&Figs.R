@@ -5,22 +5,21 @@
 # In this script:
 #In this script:
 # Packages
+# Functions
+    #runmodels()
 # Data
+  #Load predicts database & regional biome summary
 # Script
-  #Summary stats
-  #Selecting regional biomes (removing data deficient units based on sample size thresholds)
-  #Run Models
-    #Selecting appropriate fixed effects and random effects - save to output as
-    #Impact of changing data deficiency threshold - save to output as Global_CompareSampleSize.csv
-  #Plot AIC
+  #Selecting regional biomes 
+    #(removing data deficient units based on sample size thresholds)
+  #Select model structure
+    #Selecting appropriate fixed effects and random effects - save to output for use in Table S3. 
+  #Impact of sample size
+    #changing data deficiency threshold - save to output as Global_CompareSampleSize.csv. saving as Table S4. 
+  #Hold-out model
     #Run hold-out models (takes approx 1 hour)
-    # 
-#a GLM & create visualisations that show how 
-# species richness & total abundance varies with regional biome & taxa.
-
-# create figures for: biodiversity change with land use
-# biodiversity change with land use and regional biome
-# biodiversity change with land use and regional biome and taxa
+    #Plot & save results
+  #Summary stats
 
 # Packages ----------------------------------------------------------------
 
@@ -95,6 +94,7 @@ runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
 
 data <- readRDS('Data/03_PREDICTSModelData.rds')
 dim(data)
+ecoregs <- read.csv("Data/04_RBsummary.csv", stringsAsFactors = T)
 
 # Code --------------------------------------------------------------------
 #prep data
@@ -104,19 +104,10 @@ data <- subset(data, Biome != "Flooded Grasslands & Savannas")
 data <- subset(data, Biome != "Mangroves")
 data <- droplevels(data)
 
-# Summary stats -----------------------------------------------------------
 
-#number of studies
-n_studies <- n_distinct(data$Study_name)
-n_sources <- n_distinct(data$Source_ID)
-n_sites <- n_distinct(data$SSBS)
-#number of sources
-#number of sites
 
 
 # Selecting regional biomes ----------------------------------------------------
-
-ecoregs <- read.csv("Data/04_RBsummary.csv", stringsAsFactors = T)
 
 ecoregs <- ecoregs %>%
   subset(Biome != "Tundra") %>%
@@ -318,7 +309,7 @@ write.csv(globalmods, 'output/Global_compareSampleSize.csv', row.names = F)
 #in all cases, changing sample size threshold does not change the output. 
 #keep data deficiency to a limit of 25 as a good midpoint between keeping data points and reducing uncertainty. 
 
-# Plot Figure SX ----------------------------------------------------------
+# Plot Table S4 ----------------------------------------------------------
 globalmods$Fixef = factor(globalmods$Fixef, levels = c("LandUse", "LandUse:Realm", "LandUse:Biome", "LandUse:RegionalBiome"))
 
 #just going to present in a table rather than figure.
@@ -422,3 +413,13 @@ ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
   scale_y_continuous(limits = c(-1200,0))
 
 ggsave("Figs/Fig3_90pcstudies_25.png")
+
+# Summary stats -----------------------------------------------------------
+#With sample size threshold 25:
+#number of studies
+n_studies <- n_distinct(data_LUth.25$Study_name)
+n_sources <- n_distinct(data_LUth.25$Source_ID)
+n_sites <- n_distinct(data_LUth.25$SSBS)
+#number of sources
+#number of sites
+
