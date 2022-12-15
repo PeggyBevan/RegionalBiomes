@@ -27,13 +27,12 @@ library(flextable)
 library(ggplot2)
 library(devtools)
 library(StatisticalModels)
-library(data.table) #rbindlist()
-#function for getting predicted values from all models
+library(data.table) #rbindlist() #function for getting predicted values from all models
 library(cowplot) #get_legend, grid_plot()
 library(patchwork) #join plots together
 
 
-# FUNCTIONS ---------------------------------------------------------------
+# 2. FUNCTIONS ---------------------------------------------------------------
 
 #this function runs 4 models: Land use, land use*realm, landuseintensity, useintensity*realm
 # and gives AIC and R2 values
@@ -195,11 +194,11 @@ realmPredsLU_a <- function(realm, model, data) {
   
 }
 
-# 2. DATA -----------------------------------------------------------------
+# 3. DATA -----------------------------------------------------------------
 data <- readRDS('Data/03_PREDICTSModelData.rds')
  dim(data)
-# 3. SCRIPT ---------------------------------------------------------------
-# 3.1 Prep and subset data ------------------------------------------------
+# 4. SCRIPT ---------------------------------------------------------------
+# 4.1 Prep and subset data ------------------------------------------------
 
 #subset data to biome 1
 
@@ -236,7 +235,7 @@ Biome1_abund <- Biome1[!is.na(Biome1$Total_abundance),]
 table(Biome1_abund$Realm, Biome1_abund$LU_UI_3, useNA = 'always')
 
 
-# 3.2 Selecting Model Structure -------------------------------------------
+# 4.2 Selecting Model Structure -------------------------------------------
 
 #test random effect structure 
 #check random effects structure
@@ -304,7 +303,7 @@ B1LUsel = arrange(B1LUsel, AIC)
 
 #lowest AIC & highest R2 values is landuse 1.
 
-# 3.3 Run Models --------------------------------------------------
+# 4.3 Run Models --------------------------------------------------
 
 B1sr<- Biomemodels1(data = Biome1[!is.na(Biome1$Use_intensity),], responseVar = 'LogRichness', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3')
 B1A <- Biomemodels1(data = Biome1[!is.na(Biome1$Use_intensity),], responseVar = 'LogAbund', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3')
@@ -323,9 +322,9 @@ TS5 <- fix_border_issues(TS5)
 TS5 <- hline(TS5, border = small_border, i = c(5,9))
 TS5
 save_as_image(TS5, 'Output/TableS5_Biome1Models.png')
-save_as_docx(TS4, path = 'Output/TableS5_Biome1Models.docx')
+save_as_docx(TS5, path = 'Output/TableS5_Biome1Models.docx')
 
-# 3.4 Plot models ----------------------------------------------------------
+# 4.4 Plot models ----------------------------------------------------------
 
 ### Overall Biome  ----------------------------------------------------------
 
