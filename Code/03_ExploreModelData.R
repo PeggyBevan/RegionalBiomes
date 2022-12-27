@@ -102,6 +102,7 @@ ecoregs <- filter(ecoregs, Biome_num<=14)
 
 # Regional Biomes ------------------------------------------------------
 
+
 # calculate number of studies etc. for each RB
 for (i in (1:nrow(ecoregs))) {
   rb = ecoregs$RB_tnc[i]
@@ -120,16 +121,12 @@ for (i in (1:nrow(ecoregs))) {
 
 #That ends up looking like this:
 
-# k1 <- kbl(ecoregs[,c(5,4,1,6:10)], escape = F) %>%
-#   kable_classic(full_width= F) %>%
-#   kable_styling(fixed_thead = T) %>%
-#   column_spec(2:9, background = ifelse(ecoregs$n_studies == 0, "#666", 'white')) %>%
-#   collapse_rows(columns = 1, valign = "top")
-# 
-# save_kable(k1,'FinalScriptsAndData/testkable.pdf')
-
 #taxa is not included in this as it is just geographic representation
 ###TABLE 1
+#if starting code from here:
+ecoregs <- read.csv("Data/04_RBsummary.csv", stringsAsFactors = T)
+ecoregs$Biome_num<-as.numeric(ecoregs$Biome_num)
+ecoregs<-arrange(ecoregs, Biome_num, Realm)
 f1 <- flextable(ecoregs[,c(5,4,1,6:13)]) 
 
 typology <- data.frame(
@@ -143,24 +140,60 @@ typology <- data.frame(
            'Sites', 'Ecoregions', 'Taxa', "Countries", 'Total ecoregions',
            'Proportion of Ecoregions sampled'),
   stringsAsFactors = FALSE )
-
+f1
 formatflext <- function(ftable) {
   ftable <- set_header_df(ftable, mapping = typology, key = 'col_keys')
   ftable <- merge_h(ftable, part = "header")
   ftable <- merge_v(ftable, part = "header")
-  ftable <- align(ftable, i = 1:2, part = 'header', align = 'left')
+  ftable <- align(ftable, part = 'header', align = 'left')
   ftable <- theme_vanilla(ftable)
 }
 
 f1 <- formatflext(f1)
+f1 = align(f1, part = 'header', align = 'left')
+
 
 f1 <- merge_v(f1, j = ~ Biome)
 f1 <- fix_border_issues(f1)
 #conditional formatting
-f1 <- bg(f1, bg = '#cccccc', i = ~ n_studies < 1, j = 2:8)
+f1 <- bg(f1, bg = '#cccccc', i = ~ n_studies < 1, j = 2:11)
+f1
 #save_as_docx(f1, path = 'testtable.docx')
 save_as_image(f1, path = 'Figs/01_RBSamplingEffort.png')
 save_as_docx(f1, pr_section = prop_section(page_size(orient = 'landscape')), path = 'Figs/01_RBSamplingEffort.docx')
+
+#split this into two tables, so it can go over two pages
+part1 = ecoregs[1:45,]
+part2 = ecoregs[46:64,]
+
+TS1a = flextable(part1[,c(5,4,1,6:13)]) 
+TS1b = flextable(part2[,c(5,4,1,6:13)]) 
+
+TS1a <- formatflext(TS1a)
+TS1a = align(TS1a, part = 'header', align = 'left')
+TS1a <- merge_v(TS1a, j = ~ Biome)
+TS1a <- fix_border_issues(TS1a)
+#conditional formatting
+TS1a <- bg(TS1a, bg = '#cccccc', i = ~ n_studies < 1, j = 2:11)
+TS1a
+#add cont. footer
+TS1a = add_footer_row(TS1a, values = 'cont.', colwidths = 11)
+TS1a = align(TS1a, part = 'footer', align = 'right')
+#save_as_docx(f1, path = 'testtable.docx')
+save_as_image(TS1a, path = 'Output/TS1a_RegionalBiomeList.png')
+save_as_docx(TS1a, path = 'Output/TS1a_RegionalBiomeList.docx')
+
+TS1b <- formatflext(TS1b)
+TS1b = align(TS1b, part = 'header', align = 'left')
+TS1b <- merge_v(TS1b, j = ~ Biome)
+TS1b <- fix_border_issues(TS1b)
+#conditional formatting
+TS1b <- bg(TS1b, bg = '#cccccc', i = ~ n_studies < 1, j = 2:11)
+TS1b
+#save_as_docx(f1, path = 'testtable.docx')
+save_as_image(TS1b, path = 'Output/TS1b_RegionalBiomeList.png')
+save_as_docx(TS1b, path = 'Output/TS1b_RegionalBiomeList.docx')
+
 
 
 # Land Use ----------------------------------------------------------------
@@ -296,3 +329,59 @@ write.csv(ecoregs, "Data/04_RBsummary.csv", row.names = F)
 
 sp.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
 write.csv(sp.ecos, "Figs/RBcoverage.csv", row.names = F)
+
+
+
+# TS2 - LandUse Explanation Table -----------------------------------------
+
+TS2df = data.frame('Predominant habitat' = 
+                     c('Primary vegetation',
+                       'Mature secondary vegetation',
+                       'Intermediate secondary vegetation',
+                       'Young secondary vegetation',
+                       'Plantation forest',
+                       'Pasture',
+                       'Cropland',
+                       'Urban'),
+                   'Description' = c('Native vegetation that is not known or inferred to have ever been completely destroyed by human actions or by extreme natural events that do not normally play a role in ecosystem dynamics',
+                                     "Regeneration following complete removal of primary vegetation; architectural structure approaching that of primary vegetation, corresponding to a completed succession",
+                                   "Regeneration following complete removal of primary vegetation; mixed architecture showing a mid-successional stage",
+                                   "Regeneration following complete removal of primary vegetation; simple architecture representing an early successional stage",
+                                   "Previously cleared areas that people have planted with crop trees or crop shrubs for commercial or subsistence harvesting of wood and/or fruit",
+                                   "Land where livestock is known to be grazed regularly or permanently. The plant species may be predominantly native (as in rangelands) or strongly associated with humans (as in European-style pastures)",
+                                   "Land that people have planted with herbaceous crops, even if these crops will be fed to livestock once harvested",
+                                   "Areas with human habitation and/or buildings, where the primary vegetation has been removed, and where such vegetation as is present is predominantly managed for civic or personal amenity"),
+                 'LandUse' = c('Primary Vegetation','Secondary Vegetation','Secondary Vegetation','Secondary Vegetation', 'Plantation forest', 'Pasture', 'Cropland', 'Not included'),
+                 'LandUse2' = c('Natural Vegetation','Natural Vegetation','Natural Vegetation','Natural Vegetation', 'Agriculture', 'Agriculture', 'Agriculture', 'Not included'),
+                 "LandUse3" = c('Primary Vegetation','Secondary Vegetation','Secondary Vegetation','Secondary Vegetation', 'Agriculture', 'Agriculture', 'Agriculture', 'Not included'),
+                 "LandUse4" = c('Primary Vegetation', 'Secondary Vegetation', 'Secondary Vegetation','Secondary Vegetation', 'Harvested', 'Pasture', 'Harvested', 'Not included'),
+                 "LandUse5" = c('Primary Vegetation','Secondary Vegetation','Secondary Vegetation','Secondary Vegetation', 'Plantation forest', 'Agriculture', 'Agriculture', 'Not included')
+)
+
+TS2 = flextable(TS2df)
+#merge some columns
+typology <- data.frame(
+  col_keys = TS2$col_keys,
+  higher = c("", "",
+           "New classification",
+           'New classification', 'New classification', 
+           'New classification', 'New classification'),
+  what = TS2$col_keys,
+  stringsAsFactors = FALSE)
+TS2
+formatflext <- function(ftable) {
+  ftable <- set_header_df(ftable, mapping = typology, key = 'col_keys')
+  ftable <- merge_h(ftable, part = "header")
+  ftable <- merge_v(ftable, part = "header")
+  ftable <- align(ftable, part = 'header', align = 'left')
+  ftable <- theme_vanilla(ftable)
+}
+
+TS2 <- formatflext(TS2)
+TS2 = set_header_labels(TS2, "Predominant.habitat" = 'Predominant habitat')
+TS2 = set_table_properties(TS2, layout = "autofit")
+
+TS2 <- merge_v(TS2, j = ~ LandUse + LandUse2 + LandUse3 + LandUse4 + LandUse5)
+TS2 <- fix_border_issues(TS2)
+save_as_image(TS2, 'output/TS2_LandUseDescriptors.png')
+save_as_docx(TS2, path = 'output/TS2_LandUseDescriptors.docx')
