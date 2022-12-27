@@ -203,10 +203,15 @@ GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - max(GlobalLUsel$AIC)
 #small_border = fp_border(color="black", width = 2)
 
 GlobalLUsel = arrange(GlobalLUsel, AIC)
-TS3 = flextable(GlobalLUsel[,c(1:4,8,9,6,7,5,10)])
+GlobalLUsel$R2Marginal= round(GlobalLUsel$R2Marginal, 2)
+GlobalLUsel$AIC= round(GlobalLUsel$AIC, 0)
+GlobalLUsel$deltaAIC= round(GlobalLUsel$deltaAIC, 2)
+TS3 = flextable(GlobalLUsel[,c(1:4,8,9,6,5,10)])
 TS3 <- theme_vanilla(TS3)
 TS3 <- fix_border_issues(TS3)
+TS3 = set_header_labels(TS3, "Fixef" = "Fixed effects", "R2Marginal" = "Marginal R2")
 TS3
+
 save_as_image(TS3, 'Output/TableS3_LandUseVar.png')
 save_as_docx(TS4, path = 'Output/TableS3_LandUseVar.docx')
 
@@ -322,14 +327,18 @@ globalmods = globalmods %>%
                                    "data_LUth.50" = 50)
   )
 
+globalmods$R2Marginal = round(globalmods$R2Marginal, 2)
+globalmods$AIC = round(globalmods$AIC, 0)
+globalmods$deltaAIC = round(globalmods$deltaAIC, 2)
 small_border = fp_border(color="black", width = 2)
 tiny_border = fp_border(color="black", width = 1.5)
-TS4 = flextable(globalmods[,c(11,2,3,8,9,6,7,5,10)])
+TS4 = flextable(globalmods[,c(11,2,3,8,9,6,5,10)])
 TS4 <- merge_v(TS4, j = ~ minSampleSize)
 TS4 <- theme_vanilla(TS4)
 TS4 <- fix_border_issues(TS4)
 TS4 <- hline(TS4, border = small_border, i = c(8,16,24,32))
 TS4 <- hline(TS4, border = tiny_border, i = c(4,12,20,28, 36))
+TS4 = set_header_labels(TS4, "minSampleSize" = 'Min sample size', "Fixef"= "Fixed effects", 'R2Marginal' = 'Marginal R2')
 TS4
 save_as_image(TS4, 'Output/TableS4_SampleSize.png')
 save_as_docx(TS4, path = 'Output/TableS4_SampleSize.docx')
@@ -393,7 +402,7 @@ ggplot(test) +
   facet_wrap(~Response, scales = "free_y")
 
 
-labels = c('(A) Species Richness', '(B) Total Abundance')
+labels = c('(a) Species richness', '(b) Total abundance')
 names(labels) <- c("LogRichness", "LogAbund")
 
 ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
@@ -401,20 +410,20 @@ ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
   geom_boxplot(outlier.shape = NA) +
   facet_wrap(~Response, scales = "free_y", labeller = labeller(Response = labels)) +
   theme_classic() +
-  theme(strip.text.x = element_text(size = 14, hjust = 0),
+  theme(strip.text.x = element_text(size = 10, hjust = 0),
         strip.background = element_blank(),
-        text = element_text(size = 20, colour = 'black'),
-        axis.title.x = element_text(vjust = -0.8, margin = margin(t = 0, r = 0, b = 20, l = 0)),
-        axis.text = element_text(size = 15, colour = 'black',margin = margin(t = 10, r = 0, b = 20, l = 0)),
-        axis.text.x = element_text(vjust = -0.5, margin = margin(t = 0, r = 0, b = 20, l = 0)),
+        text = element_text(size = 10, colour = 'black'),
+        axis.title.x = element_text(vjust = -0.8, margin = margin(t = 0, r = 0, b = 15, l = 0)),
+        axis.text = element_text(size = 8, colour = 'black',margin = margin(t = 10, r = 0, b = 10, l = 0)),
+        axis.text.x = element_text(vjust = -0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
         )+
   scale_x_discrete(name = 'Fixed Effects', labels = c('LU', 'LU:Realm', 'LU:Biome', 'LU:RB')) +
   ylab(expression(paste("\n",Delta, "AIC"))) +
   scale_y_continuous(limits = c(-1200,0))
 
-ggsave("Figs/Fig3_90pcstudies_25.png")
+ggsave("Figs/Fig3_90pcstudies_25.png", dpi = 320, width = 14, height = 8, unit = 'cm')
 
-# Summary stats -----------------------------------------------------------
+  # Summary stats -----------------------------------------------------------
 #With sample size threshold 25:
 #number of studies
 n_studies <- n_distinct(data_LUth.25$Study_name)
@@ -422,4 +431,14 @@ n_sources <- n_distinct(data_LUth.25$Source_ID)
 n_sites <- n_distinct(data_LUth.25$SSBS)
 #number of sources
 #number of sites
+
+#With sample size threshold 1:
+#number of studies
+n_studies1 <- n_distinct(data_LUth.1$Study_name)
+n_sources1 <- n_distinct(data_LUth.1$Source_ID)
+n_sites1 <- n_distinct(data_LUth.1$SSBS)
+n_rb1 <- n_distinct(data_LUth.1$RB_tnc)
+#number of sources
+#number of sites
+
 
