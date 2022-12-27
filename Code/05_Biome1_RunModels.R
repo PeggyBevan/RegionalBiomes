@@ -233,7 +233,7 @@ Biome1 <- Biome1[Biome1$Realm!='Oceania',] %>%
 #subset rows with abundance values
 Biome1_abund <- Biome1[!is.na(Biome1$Total_abundance),]
 table(Biome1_abund$Realm, Biome1_abund$LU_UI_3, useNA = 'always')
-
+table(Biome1_abund$Realm, Biome1_abund$LandUse, useNA = 'always')
 
 # 4.2 Selecting Model Structure -------------------------------------------
 
@@ -425,7 +425,7 @@ b1 <- StatisticalModels::GLMER(modelData = Biome1[!is.na(Biome1$Use_intensity),]
                                fitFamily = 'gaussian', 
                                fixedStruct = 'LandUse*Realm',
                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
-
+#n = 5536
 #list realms in this biome
 RealmB1 <- data.frame(Realm = unique(Biome1$Realm))
 
@@ -440,7 +440,7 @@ B1_LU <- data.table::rbindlist(B1_LU)
 for ( i in 1:nrow(B1_LU)) {
   B1_LU$n[i] <- nrow(subset(Biome1[!is.na(Biome1$Use_intensity),], Realm == B1_LU$Realm[i] & LandUse == B1_LU$LU[i]))
 }
-level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Cropland", "Pasture","Plantation forest")
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
 
 
 figB1.a <- ggplot(B1_LU[B1_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU),y = y, ymax = upper, ymin = lower, colour = Realm)) +
@@ -517,11 +517,12 @@ b1a1 <- StatisticalModels::GLMER(modelData = Biome1_abund[!is.na(Biome1_abund$Us
                                  fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
                                  randomStruct = "(1|SS)", REML = F)
 
-B1_LU_a <- apply(RealmB1, 1, FUN = realmPredsLU_a, model = b1a1$model, data = Biome1)
+B1_LU_a <- apply(RealmB1, 1, FUN = realmPredsLU_a, model = b1a1$model, data = Biome1_abund[!is.na(Biome1_abund$Use_intensity),])
 B1_LU_a <- data.table::rbindlist(B1_LU_a)
 for ( i in 1:nrow(B1_LU_a)) {
-  B1_LU_a$n[i] <- nrow(subset(Biome1, Realm == B1_LU_a$Realm[i] & LandUse == B1_LU_a$LU[i])) 
+  B1_LU_a$n[i] <- nrow(subset(Biome1_abund[!is.na(Biome1_abund$Use_intensity),], Realm == B1_LU_a$Realm[i] & LandUse == B1_LU_a$LU[i]))
 }
+
 
 
 figB1.c <- ggplot(B1_LU_a[B1_LU_a$n > 25,], aes(x = factor(LU, levels = level_order_LU), y = y, ymax = upper, ymin = lower, colour = Realm)) +
@@ -530,8 +531,8 @@ figB1.c <- ggplot(B1_LU_a[B1_LU_a$n > 25,], aes(x = factor(LU, levels = level_or
   scale_colour_manual(values = c("#66C2A5", "#FC8D62", "#8DA0CB")) +
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
-  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =115, ),  data = B1_LU_a[B1_LU_a$n > 25 & B1_LU_a$upper > 110,], colour = 'black', position = position_dodge(width = 0.6) ) +
-  coord_cartesian(ylim = c(-110,110)) +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ),  data = B1_LU_a[B1_LU_a$n > 25 & B1_LU_a$upper > 110,], colour = 'black', position = position_dodge(width = 0.6) ) +
+  coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = 'Land Use', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr')) +
   scale_y_continuous(name = 'Change in Total Abundance (%)') +
   theme_bw()+
@@ -556,7 +557,7 @@ B1_LUUI3_a <- apply(RealmB1, 1, FUN = realmPredsLU_UI_a, model = b1a3$model, dat
 
 B1_LUUI3_a <- data.table::rbindlist(B1_LUUI3_a)
 for ( i in 1:nrow(B1_LUUI3_a)) {
-  B1_LUUI3_a$n[i] <- nrow(subset(Biome1, Realm == B1_LUUI3_a$Realm[i] & LU_UI_3 == B1_LUUI3_a$LU[i])) 
+  B1_LUUI3_a$n[i] <- nrow(subset(Biome1_abund[!is.na(Biome1_abund$Use_intensity),], Realm == B1_LUUI3_a$Realm[i] & LU_UI_3 == B1_LUUI3_a$LU[i])) 
 }
 
 
@@ -569,7 +570,7 @@ figB1.d <- ggplot(B1_LUUI3_a[B1_LUUI3_a$n > 25,], aes(x = factor(LU, levels = La
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
   #geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =115, ),  data = B1_LUUI3_a[B1_LUUI3_a$n > 25 & B1_LUUI3_a$upper > 100,], colour = 'black', position = position_dodge(width = 0.6) ) +
-  coord_cartesian(ylim = c(-110,110)) +
+  coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = 'Land Use - Use Intensity', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
   scale_y_continuous(name = '') +
   theme_bw() +
@@ -585,15 +586,15 @@ figB1.d
 
 
 
+# Fig4 --------------------------------------------------------------------
+
 l <- cowplot::get_legend(figB1.a + theme(legend.position = "bottom"))
 
 cowplot::plot_grid(l)/(figB1.a + figB1.b + figB1.c + figB1.d) + 
   plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none")
 #plot_annotation(title = "main title") 
-
-#adding figures together
-figB1.a + figB1.b + figB1.c +figB1.d + (plot_layout(guides = 'collect')) & theme(legend.position = 'top')
-
-
+ggsave("Figs/Fig4.png", width = 13.7, height = 12)
+#make sure graphics box is tall & wide enough to stop text overlapping.
+#Saving 13.7 x 12 in image
 
 write.csv(Biome1, "Figs/Maps/Biome1.csv", row.names = F)
