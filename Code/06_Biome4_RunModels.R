@@ -374,7 +374,7 @@ for ( i in 1:nrow(B4_LU)) {
   B4_LU$n[i] <- nrow(subset(Biome4[!is.na(Biome4$Use_intensity),], Realm == B4_LU$Realm[i] & LandUse == B4_LU$LU[i]))
 }
 
-level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Cropland", "Pasture","Plantation forest")
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
 
 figB4.a <- ggplot(B4_LU[B4_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
@@ -382,7 +382,7 @@ figB4.a <- ggplot(B4_LU[B4_LU$n > 25,], aes(x = factor(LU, levels = level_order_
   scale_colour_manual(values = c("#E78AC3", "#A6D854", '#8DA0CB', "#FFD92F")) +
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
-  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1.1,  data = B4_LU[B4_LU$n > 25 & B4_LU$upper > 100,], colour = 'black') +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100), hjust = 1.1,  data = B4_LU[B4_LU$n > 25 & B4_LU$upper > 100,], colour = 'black') +
   coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = '', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr')) +
   scale_y_continuous(name = 'Change in Species Richness (%)') +
@@ -402,10 +402,10 @@ figB4.a
 
 ### Fig 5b -----------------------------------------------------------------
 
-B4_LUUI3 <- apply(RealmB4, 1, FUN = realmPredsLU_UI, model = b3$model, data = Biome4)
+B4_LUUI3 <- apply(RealmB4, 1, FUN = realmPredsLU_UI, model = b3$model, data = Biome4[!is.na(Biome4$Use_intensity),])
 B4_LUUI3 <- data.table::rbindlist(B4_LUUI3)
 for ( i in 1:nrow(B4_LUUI3)) {
-  B4_LUUI3$n[i] <- nrow(subset(Biome4, Realm == B4_LUUI3$Realm[i] & LU_UI_3 == B4_LUUI3$LU[i])) 
+  B4_LUUI3$n[i] <- nrow(subset(Biome4[!is.na(Biome4$Use_intensity),], Realm == B4_LUUI3$Realm[i] & LU_UI_3 == B4_LUUI3$LU[i])) 
 }
 LandUse = c("Primary Vegetation", 'Secondary Vegetation', 'Secondary Vegetation', 'Agriculture', 'Agriculture')
 UseIntensity <- c('PV', 'Minimal Use', 'Instense Use', 'Minimal Use', 'Instense Use')
@@ -419,9 +419,9 @@ figB4.b <- ggplot(B4_LUUI3[B4_LUUI3$n > 25,], aes(x = factor(LU, levels = LandUs
   geom_point(position = position_dodge(width = 0.6), size = 5) + 
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
-  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  data = B4_LUUI3[B4_LUUI3$n > 25 & B4_LUUI3$upper > 130,], colour = 'black') +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  data = B4_LUUI3[B4_LUUI3$n > 25 & B4_LUUI3$upper > 100,], colour = 'black') +
   coord_cartesian(ylim = c(-100,100)) +
-  scale_x_discrete(name = 'Land Use - Use Intensity', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
+  scale_x_discrete(name = '', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
   scale_y_continuous(name = '') +
   theme_bw()+
   theme(#panel.grid.major = element_blank(),
@@ -439,7 +439,7 @@ figB4.b
 B4_LU_a <- apply(RealmB4, 1, FUN = realmPredsLU_a, model = ba1$model, data = Biome4_abund[!is.na(Biome4_abund$Use_intensity),])
 B4_LU_a <- data.table::rbindlist(B4_LU_a)
 for ( i in 1:nrow(B4_LU_a)) {
-  B4_LU_a$n[i] <- nrow(subset(Biome4, Realm == B4_LU_a$Realm[i] & LandUse == B4_LU_a$LU[i])) 
+  B4_LU_a$n[i] <- nrow(subset(Biome4_abund[!is.na(Biome4_abund$Use_intensity),], Realm == B4_LU_a$Realm[i] & LandUse == B4_LU_a$LU[i])) 
 }
 
 
@@ -466,12 +466,12 @@ figB4.c
 #ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_LU_aRealm.png")
 
 
-# Fig 5.d -----------------------------------------------------------------
+### Fig 5.d -----------------------------------------------------------------
 
 B4_LUUI3_a <- apply(RealmB4, 1, FUN = realmPredsLU_UI_a, model = ba3$model, data = Biome4_abund[!is.na(Biome4_abund$Use_intensity),])
 B4_LUUI3_a <- data.table::rbindlist(B4_LUUI3_a)
 for ( i in 1:nrow(B4_LUUI3_a)) {
-  B4_LUUI3_a$n[i] <- nrow(subset(Biome4, Realm == B4_LUUI3_a$Realm[i] & LU_UI_3 == B4_LUUI3_a$LU[i])) 
+  B4_LUUI3_a$n[i] <- nrow(subset(Biome4_abund[!is.na(Biome4_abund$Use_intensity),], Realm == B4_LUUI3_a$Realm[i] & LU_UI_3 == B4_LUUI3_a$LU[i])) 
 }
 
 B4_LUUI3_a <- cbind(B4_LUUI3_a, LandUse, UseIntensity)
@@ -484,8 +484,8 @@ figB4.d <- ggplot(B4_LUUI3_a[B4_LUUI3_a$n > 25,], aes(x = factor(LU, levels = La
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
   geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  angle = 45, data = B4_LUUI3_a[B4_LUUI3_a$n > 25 & B4_LUUI3_a$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
   coord_cartesian(ylim = c(-100,100)) +
-  scale_x_discrete(name = 'Land Use', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
-  scale_y_continuous(name = 'Change in Total Abundance (%)') +
+  scale_x_discrete(name = 'Land Use - Use Intensity', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
+  scale_y_continuous(name = '') +
   theme_bw()+
   theme(#panel.grid.major = element_blank(),
     #panel.grid.minor = element_blank(),
@@ -496,16 +496,19 @@ figB4.d <- ggplot(B4_LUUI3_a[B4_LUUI3_a$n > 25,], aes(x = factor(LU, levels = La
 
 figB4.d
 
-blank <- ggplot() + theme_void()
+
 l <- cowplot::get_legend(figB4.a + theme(legend.position = "bottom"))
 
 cowplot::plot_grid(l)/(figB4.a + figB4.b + figB4.c + figB4.d) + 
-  plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none")
-
-
+  plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none") 
+ggsave("Figs/Fig5.png", width = 13.7, height = 12)
+#make sure graphics box is tall & wide enough to stop text overlapping.
+#Saving 13.7 x 12 in image
 write.csv(Biome4, "Figs/Maps/Biome4.csv", row.names = F)
 
 
+
+# Plotting whole biome ----------------------------------------------------
 #Not in manuscript, just for visualisation & data checking:
 #whole biome, just land use 
 

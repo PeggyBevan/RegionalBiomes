@@ -365,6 +365,7 @@ for ( i in 1:nrow(B7_LU)) {
   B7_LU$n[i] <- nrow(subset(Biome7[!is.na(Biome7$Use_intensity),], Realm == B7_LU$Realm[i] & LandUse == B7_LU$LU[i]))
 }
 
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
 
 figB7.a <- ggplot(B7_LU[B7_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
@@ -392,7 +393,7 @@ figB7.a
 B7_LUUI3 <- apply(RealmB7, 1, FUN = realmPredsLU_UI, model = b73$model, data = Biome7[!is.na(Biome7$Use_intensity),])
 B7_LUUI3 <- data.table::rbindlist(B7_LUUI3)
 for ( i in 1:nrow(B7_LUUI3)) {
-  B7_LUUI3$n[i] <- nrow(subset(Biome7, Realm == B7_LUUI3$Realm[i] & LU_UI_3 == B7_LUUI3$LU[i])) 
+  B7_LUUI3$n[i] <- nrow(subset(Biome7[!is.na(Biome7$Use_intensity),], Realm == B7_LUUI3$Realm[i] & LU_UI_3 == B7_LUUI3$LU[i])) 
 }
 B7_LUUI3 <- cbind(B7_LUUI3, LandUse, UseIntensity)
 
@@ -417,14 +418,12 @@ figB7.b <- ggplot(B7_LUUI3[B7_LUUI3$n > 25,], aes(x = factor(LU, levels = LandUs
 
 figB7.b
 
-
-
 # Fig 6.c -----------------------------------------------------------------
 
 B7_LU_a <- apply(RealmB7, 1, FUN = realmPredsLU_a, model = b7a1$model, data = Biome7_abund[!is.na(Biome7_abund$Use_intensity),])
 B7_LU_a <- data.table::rbindlist(B7_LU_a)
 for ( i in 1:nrow(B7_LU_a)) {
-  B7_LU_a$n[i] <- nrow(subset(Biome7, Realm == B7_LU_a$Realm[i] & LandUse == B7_LU_a$LU[i])) 
+  B7_LU_a$n[i] <- nrow(subset(Biome7_abund[!is.na(Biome7_abund$Use_intensity),], Realm == B7_LU_a$Realm[i] & LandUse == B7_LU_a$LU[i])) 
 }
 
 
@@ -453,7 +452,7 @@ figB7.c
 B7_LUUI3_a <- apply(RealmB7, 1, FUN = realmPredsLU_UI_a, model = b7a3$model, data = Biome7_abund[!is.na(Biome7_abund$Use_intensity),])
 B7_LUUI3_a <- data.table::rbindlist(B7_LUUI3_a)
 for ( i in 1:nrow(B7_LUUI3_a)) {
-  B7_LUUI3_a$n[i] <- nrow(subset(Biome7, Realm == B7_LUUI3_a$Realm[i] & LU_UI_3 == B7_LUUI3_a$LU[i])) 
+  B7_LUUI3_a$n[i] <- nrow(subset(Biome7_abund[!is.na(Biome7_abund$Use_intensity),], Realm == B7_LUUI3_a$Realm[i] & LU_UI_3 == B7_LUUI3_a$LU[i])) 
 }
 
 B7_LUUI3_a <- cbind(B7_LUUI3_a, LandUse, UseIntensity)
@@ -482,5 +481,9 @@ l <- cowplot::get_legend(figB7.a + theme(legend.position = "bottom"))
 
 cowplot::plot_grid(l)/(figB7.a + figB7.b + figB7.c + figB7.d) + 
   plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none")
+ggsave("Figs/Fig6.png", width = 13.7, height = 12)
+#make sure graphics box is tall & wide enough to stop text overlapping.
+#Saving 13.7 x 12 in image
+
 
 write.csv(Biome7, "Figs/Maps/Biome7.csv")
