@@ -389,11 +389,17 @@ sample_results_df = sample_results_df %>%
   group_by(sample, Response) %>%
   mutate(ranking = row_number())
 
+#trying a different AIC method - best fitting model = 0
+sample_results_df = sample_results_df %>%
+  arrange(AIC) %>%
+  group_by(sample, Response) %>%
+  mutate(dAIC_2 = AIC - (min(AIC)))
+
 
 # Plot Fig.3 --------------------------------------------------------------
 
 # Fixing order of factors
-sample_results_df$Fixef = factor(sample_results_df$Fixef, levels = c("LandUse", "LandUse:Realm", "LandUse:Biome", "LandUse:RegionalBiome"))
+sample_results_df$Fixef = factor(sample_results_df$Fixef, levels = c("LandUse:RegionalBiome","LandUse:Biome", "LandUse:Realm", "LandUse"))
 # Boxplot of deltaAIC
 sample_results_df$Response = factor(sample_results_df$Response, levels = c('LogRichness', 'LogAbund'))
 
@@ -405,7 +411,7 @@ ggplot(test) +
 labels = c('(a) Species richness', '(b) Total abundance')
 names(labels) <- c("LogRichness", "LogAbund")
 
-ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
+ggplot(sample_results_df, aes(x = Fixef, y = dAIC_2, group = Fixef)) +
   #geom_point(aes(colour = ranking), position = 'jitter') +
   geom_boxplot(outlier.shape = NA) +
   facet_wrap(~Response, scales = "free_y", labeller = labeller(Response = labels)) +
@@ -417,9 +423,9 @@ ggplot(sample_results_df, aes(x = Fixef, y = deltaAIC, group = Fixef)) +
         axis.text = element_text(size = 8, colour = 'black',margin = margin(t = 10, r = 0, b = 10, l = 0)),
         axis.text.x = element_text(vjust = -0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
         )+
-  scale_x_discrete(name = 'Fixed Effects', labels = c('LU', 'LU:Realm', 'LU:Biome', 'LU:RB')) +
+  scale_x_discrete(name = 'Fixed Effects', labels = c('LU:RB', 'LU:Biome', 'LU:Realm', 'LU')) +
   ylab(expression(paste("\n",Delta, "AIC"))) +
-  scale_y_continuous(limits = c(-1200,0))
+  scale_y_continuous(limits = c(0,1200))
 
 ggsave("Figs/Fig3_90pcstudies_25.png", dpi = 320, width = 14, height = 8, unit = 'cm')
 
