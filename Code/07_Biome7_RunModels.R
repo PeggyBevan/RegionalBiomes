@@ -77,7 +77,7 @@ Biomemodels1 <- function(data, responseVar, LandUseVar, UseIntensityVar) {
                              "R2Conditional" = R2$conditional,
                              "n" = nrow,
                              "n_RB" = n_distinct(data$RB_tnc))
-  modelresults$deltaAIC = modelresults$AIC - max(modelresults$AIC)
+  modelresults$deltaAIC = modelresults$AIC - min(modelresults$AIC)
   modelresults = arrange(modelresults, AIC)
   return(modelresults)
 }
@@ -283,7 +283,7 @@ B7LUsel <- data.frame(Dataset = "Biome7",
                       n = nrow(Biome7[!is.na(Biome7$Use_intensity),]),
                       n_RB = n_distinct(Biome7$RB_tnc)
 )
-B7LUsel$deltaAIC <- B7LUsel$AIC - max(B7LUsel$AIC)
+B7LUsel$deltaAIC <- B7LUsel$AIC - min(B7LUsel$AIC)
 B7LUsel = arrange(B7LUsel, AIC)
 
 
@@ -299,10 +299,18 @@ B7$Dataset = 'Biome7'
 B7 <- rbind(B7LUsel, B7)
 write.csv(B7, "output/B7ModSel.csv", row.names = F)
 
-TS7 = flextable(B7[,c(1:4,8,9,6,7,5,10)])
+names(B7)[3] = 'Fixed Effects'
+names(B7)[6] = 'Marginal R2'
+names(B7)[10] = 'dAIC'
+B7$`Marginal R2`= round(B7$`Marginal R2`, 2)
+B7$AIC = round(B7$AIC, 0)
+B7$dAIC = round(B7$dAIC,2)
+
+
+TS7 = flextable(B7[,c(2:4,8,9,6,5,10)])
 small_border = fp_border(color="black", width = 2)
 tiny_border = fp_border(color="black", width = 1.5)
-TS7 <- merge_v(TS7, j = ~ Dataset + Response)
+TS7 <- merge_v(TS7, j = ~ Response)
 TS7 <- theme_vanilla(TS7)
 TS7 <- fix_border_issues(TS7)
 TS7 <- hline(TS7, border = small_border, i = c(5,9))

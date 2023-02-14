@@ -85,7 +85,7 @@ runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
                              "R2Conditional" = R2$conditional,
                              "n" = nrow,
                              "n_RB" = n_distinct(data$RB_tnc))
-  modelresults$deltaAIC = modelresults$AIC - max(modelresults$AIC)
+  modelresults$deltaAIC = modelresults$AIC - min(modelresults$AIC)
   modelresults = arrange(modelresults, AIC)
   return(modelresults)
 }
@@ -197,7 +197,7 @@ GlobalLUsel <- data.frame(Dataset = "Global_LUth1",
                       n = nrow(data_LUth.1),
                       n_RB = n_distinct(data_LUth.1$RB_tnc)
 )
-GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - max(GlobalLUsel$AIC)
+GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - min(GlobalLUsel$AIC)
 
 #create supp table 3
 #small_border = fp_border(color="black", width = 2)
@@ -213,7 +213,7 @@ TS3 = set_header_labels(TS3, "Fixef" = "Fixed effects", "R2Marginal" = "Marginal
 TS3
 
 save_as_image(TS3, 'Output/TableS3_LandUseVar.png')
-save_as_docx(TS4, path = 'Output/TableS3_LandUseVar.docx')
+save_as_docx(TS3, path = 'Output/TableS3_LandUseVar.docx')
 
 ##Adding biome and realm fixed effects
 m0 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
