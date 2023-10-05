@@ -32,7 +32,7 @@ library(tidyr) #spread()
 
 # Data --------------------------------------------------------------------
 
-BD <- readRDS('Data/03_PREDICTSModelData.rds')
+BD <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
 
 # The TNC egoregion map has the same ecoregions as those in the PREDICTS databse. I got it from here: http://maps.tnc.org/gis_data.html
 tnc_ecoregions <- readOGR(dsn = 'Data/terr-ecoregions-TNC', layer = 'tnc_terr_ecoregions')
@@ -101,8 +101,6 @@ ecoregs<-arrange(ecoregs, Biome_num, Realm)
 ecoregs <- filter(ecoregs, Biome_num<=14)
 
 # Regional Biomes ------------------------------------------------------
-
-
 # calculate number of studies etc. for each RB
 for (i in (1:nrow(ecoregs))) {
   rb = ecoregs$RB_tnc[i]
@@ -111,13 +109,13 @@ for (i in (1:nrow(ecoregs))) {
   ecoregs$n_sources[i] = n_distinct(BD$Source_ID[BD$RB_tnc==rb])
   ecoregs$n_sites[i] = n_distinct(BD$SSBS[BD$RB_tnc==rb]) 
   ecoregs$n_ecoregions[i] = n_distinct(BD$Ecoregion[BD$RB_tnc==rb])
-  ecoregs$n_taxa[i] = n_distinct(BD$Taxon[BD$RB_tnc==rb])
+  ecoregs$n_taxa[i] = n_distinct(BD$my_taxa[BD$RB_tnc==rb])
   ecoregs$n_country[i] =n_distinct(BD$Country[BD$RB_tnc==rb])
   ecoregs$t_ecoregions[i] = n_distinct(tnc_ecoregions@data$ECO_NAME[tnc_ecoregions@data$RealmMHT==tnc_code])
   ecoregs$p_ecoregions[i] = round(ecoregs$n_ecoregions[i]/ecoregs$t_ecoregions[i], 2)
 }
 
-#write.csv(ecoregs, 'FinalScriptsAndData/Data/04_RBsummary.csv', row.names = F)
+write.csv(ecoregs, 'FinalScriptsAndData/Data/04_RBsummary.csv', row.names = F)
 
 #That ends up looking like this:
 
@@ -151,8 +149,6 @@ formatflext <- function(ftable) {
 
 f1 <- formatflext(f1)
 f1 = align(f1, part = 'header', align = 'left')
-
-
 f1 <- merge_v(f1, j = ~ Biome)
 f1 <- fix_border_issues(f1)
 #conditional formatting
@@ -211,26 +207,21 @@ ecoregs$Agriculture <- rowSums(ecoregs[,16:18], na.rm = T)
 # Taxon Sampling Effort ---------------------------------------------------
 
 # representation by taxa
-levels(BD$Study_common_taxon)
-n_distinct(BD$Study_common_taxon)
-n_distinct(BD$Taxon)
+levels(BD$my_taxa)
+n_distinct(BD$my_taxa)
 
-table(BD$Rank_of_study_common_taxon)
-
-# there are a lot of rows that have no rank - these also have no common taxon - these all have species names though - they are mainly plants (SORTED USING COALSESCE FUNCTION AT BEGINNING OF SCRIPT)
-table(BD$CommonTaxon)
-table(BD$CommonTaxon_Phylum)
+table(BD$my_taxa)
 
 ##How are taxa spread across regional biomes?
 # Across biomes
-d <- as.data.frame(table(BD$Biome, BD$CommonTaxon))
+d <- as.data.frame(table(BD$Biome, BD$my_taxa))
 d <- spread(d, Var2,Freq)
 names(d)[1]<-'Biome'
 flextable(d)
 # fungi and herptiles mainly underrepresented. Mammals are less studied in grassland biomes. Birds and plants are very well sampled.
 
 # Across realms
-e <- as.data.frame(table(BD$Realm, BD$CommonTaxon))
+e <- as.data.frame(table(BD$Realm, BD$my_taxa))
 e <- spread(e, Var2, Freq)
 names(e)[1]<-'Realm'
 flextable(e)
@@ -239,14 +230,13 @@ flextable(e)
 # no mammal studies in nearctic realm. 
 #everywhere else pretty well spread out.
 
-Taxa <- BD %>% count(RB_tnc, CommonTaxon) %>% spread(CommonTaxon, n)
+Taxa <- BD %>% count(RB_tnc, my_taxa) %>% spread(my_taxa, n)
 ecoregs<- merge(ecoregs, Taxa, by.x = 'RB_tnc', all.x = TRUE)
-ecoregs$Vertebrate <- rowSums(ecoregs[,c(22,24,25)], na.rm = T)
 
-f4 <- ecoregs[,c(5,4,1,3,20:26)]
+f4 <- ecoregs[,c(5,4,1,3,20:23)]
 f4 <- arrange(f4, Biome_num)
 f4[is.na(f4)] = 0 
-f4 <- flextable(f4[,c(1,2,5:10)])
+f4 <- flextable(f4[,c(1,2,5:8)])
 f4 <- merge_v(f4, j = ~ Biome)
 
 typology <- data.frame(
@@ -255,13 +245,12 @@ typology <- data.frame(
            'Number of samples of each taxa', 
            'Number of samples of each taxa', 
            'Number of samples of each taxa', 
-           'Number of samples of each taxa',
-           'Number of samples of each taxa', 
-           'Number of samples of each taxa'),
+           'Number of samples of each taxa'
+           ),
   what = c("Biome", "Realm", 
            'Plant', "Fungi",  
-           'Herptile', 'Invertebrate', 
-           'Bird', 'Mammal'),
+           'Invertebrate', 
+           'Vertebrate'),
   stringsAsFactors = FALSE )
 
 f4 <- set_header_df(f4, mapping = typology, key = 'col_keys')
@@ -286,8 +275,6 @@ g <- BD %>%
   group_by(Biome_num, Biome, Realm, RB_tnc) %>%
   count()
 
-
-
 #number of studies
 n_distinct(BD$Study_name)
 #number of independent sources
@@ -300,8 +287,6 @@ f5 <- theme_vanilla(f5)
 f5 <- merge_v(f5, j = ~ Biome)
 f5 <- fix_border_issues(f5)
 save_as_image(f5, 'Figs/04_FinalList.png')
-
-
 
 # Save summary csv --------------------------------------------------------
 ##create threshold variables 
@@ -323,12 +308,12 @@ ecoregs <- ecoregs %>%
 
 
 #save ecoregs 
-write.csv(ecoregs, "Data/04_RBsummary.csv", row.names = F)
+write.csv(ecoregs, "Data/04_RBsummary_taxa.csv", row.names = F)
 
 #for supplementary material
 
 sp.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
-write.csv(sp.ecos, "Figs/RBcoverage.csv", row.names = F)
+write.csv(sp.ecos, "Figs/RBcoverage_taxa.csv", row.names = F)
 
 
 
