@@ -31,7 +31,6 @@ library(performance)
 library(devtools)
 library(dplyr)
 library(flextable) #saving output
-library(officer) #to support flextable
 # load PREDICTGLMER function 
 source('Code/PredictGLMERfunction.R')
 
@@ -48,19 +47,19 @@ runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
   m <- NULL
   m[[1]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
                                      fitFamily = 'gaussian', fixedStruct = paste(LandUseVar), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                     randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[2]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
                                      fitFamily = 'gaussian', fixedStruct = paste0(LandUseVar, "*Biome"), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                     randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[3]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
                                      fitFamily = 'gaussian', fixedStruct = paste0(LandUseVar, "*Realm"), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                     randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[4]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
                                      fitFamily = 'gaussian', fixedStruct = paste0(LandUseVar, "*RB_tnc"), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                     randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   aic <- AIC(m[[1]]$model, m[[2]]$model, m[[3]]$model, m[[4]]$model)
   nrow <- NULL
@@ -92,9 +91,9 @@ runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
 
 # Data --------------------------------------------------------------------
 
-data <- readRDS('Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
 dim(data)
-ecoregs <- read.csv("Data/04_RBsummary.csv", stringsAsFactors = T)
+ecoregs <- read.csv("Data/04_RBsummary_taxa.csv", stringsAsFactors = T)
 
 # Code --------------------------------------------------------------------
 #prep data
@@ -103,9 +102,6 @@ data <- subset(data, Biome != "Tundra")
 data <- subset(data, Biome != "Flooded Grasslands & Savannas")
 data <- subset(data, Biome != "Mangroves")
 data <- droplevels(data)
-
-
-
 
 # Selecting regional biomes ----------------------------------------------------
 
@@ -141,40 +137,52 @@ names(ecoregs)
 #check random effects structure
 r0 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 r1 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
-                               randomStruct = "(1|SS)", REML = F)
+                               randomStruct = "(1|SS)+(1|my_taxa)", REML = F)
 r2 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
-                               randomStruct = "(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
 r3 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SSB)+(1|my_taxa)", REML = F)
+r4 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SSB)", REML = F)
+r5 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SS)", REML = F)
+r6 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|my_taxa)", REML = F)
+r7 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc'
                              , randomStruct = 0, REML = F)
 
-AIC(r0$model, r1$model, r2$model)
-#SS & SSB is best
+AIC(r0$model, r1$model, r2$model, r3$model,r4$model,r5$model,r6$model)
+#SS & SSB & taxa is best
 
 #check best land use structure
 
 L0 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 l1 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse2*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 l2 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse3*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 l3 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse4*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 l4 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogRichness",
                                fitFamily = 'gaussian', fixedStruct = 'LandUse5*RB_tnc', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
 
 aic <- AIC(L0$model, l1$model, l2$model, l3$model, l4$model)
@@ -218,19 +226,19 @@ save_as_docx(TS3, path = 'Output/TableS3_LandUseVar.docx')
 ##Adding biome and realm fixed effects
 m0 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
                                    fitFamily = 'gaussian', fixedStruct = 'LandUse', 
-                                   randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                   randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 m1 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
                                        fitFamily = 'gaussian', fixedStruct = 'LandUse*Biome', 
-                                       randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                       randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 m2 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
                                    fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
-                                   randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                   randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 m3 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
                                    fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
-                                   randomStruct = "(1|SS)+(1|SSB)", REML = F)
+                                   randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 #test if the final two models are overdispersed
 GLMEROverdispersion(m1$model)
 GLMEROverdispersion(m3$model)
@@ -378,7 +386,7 @@ for (i in 1:N) {
 sample_results_df = rbindlist(sample_results)
 
 # Save results
-write.csv(sample_results_df, file = "Output/holdout_results_LUth25.csv", row.names = F)
+write.csv(sample_results_df, file = "Output/holdout_results_LUth25_taxa.csv", row.names = F)
 
 #need to give each model in each iteration a rank, based on deltaAIC. 
 #so rank 1 will be the model with the most support
@@ -395,7 +403,7 @@ sample_results_df = sample_results_df %>%
   group_by(sample, Response) %>%
   mutate(dAIC_2 = AIC - (min(AIC)))
 
-
+head(sample_results_df)
 # Plot Fig.3 --------------------------------------------------------------
 
 # Fixing order of factors
@@ -427,7 +435,7 @@ ggplot(sample_results_df, aes(x = Fixef, y = dAIC_2, group = Fixef)) +
   ylab(expression(paste("\n",Delta, "AIC"))) +
   scale_y_continuous(limits = c(0,1200))
 
-ggsave("Figs/Fig3_90pcstudies_25.png", dpi = 320, width = 14, height = 8, unit = 'cm')
+ggsave("Figs/Fig3_90pcstudies_25_taxa.png", dpi = 320, width = 14, height = 8, unit = 'cm')
 
   # Summary stats -----------------------------------------------------------
 #With sample size threshold 25:
@@ -446,5 +454,3 @@ n_sites1 <- n_distinct(data_LUth.1$SSBS)
 n_rb1 <- n_distinct(data_LUth.1$RB_tnc)
 #number of sources
 #number of sites
-
-
