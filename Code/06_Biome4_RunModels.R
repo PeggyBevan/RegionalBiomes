@@ -30,170 +30,12 @@ library(StatisticalModels)
 library(data.table)
 library(cowplot)
 library(patchwork)
-
-
-# 2. FUNCTIONS ------------------------------------------------------------
-Biomemodels1 <- function(data, responseVar, LandUseVar, UseIntensityVar) {
-  m <- NULL
-  m[[1]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'gaussian', fixedStruct = paste(LandUseVar), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
-  
-  m[[2]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'gaussian', fixedStruct = paste0(LandUseVar, "*Realm"), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
-  
-  m[[3]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'gaussian', fixedStruct = paste0(UseIntensityVar), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
-  
-  m[[4]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'gaussian', fixedStruct = paste0(UseIntensityVar, "*Realm"), 
-                                     randomStruct = "(1|SS)+(1|SSB)", REML = F)
-  
-  aic <- AIC(m[[1]]$model, m[[2]]$model, m[[3]]$model, m[[4]]$model)
-  nrow <- NULL
-  nrow[1] <- nrow(m[[1]]$data)
-  nrow[2] <- nrow(m[[2]]$data)
-  nrow[3] <- nrow(m[[3]]$data)
-  nrow[4] <- nrow(m[[4]]$data)
-  
-  R2 <- NULL
-  R2[[1]] <- R2GLMER(m[[1]]$model)
-  R2[[2]] <- R2GLMER(m[[2]]$model)
-  R2[[3]] <- R2GLMER(m[[3]]$model)
-  R2[[4]] <- R2GLMER(m[[4]]$model)
-  R2 <- rbindlist(R2)
-  
-  LandUseVardf <- c(rep(LandUseVar, 2), rep(UseIntensityVar, 2))
-  
-  modelresults <- data.frame('Dataset' = deparse(substitute(data)),
-                             "Response" = responseVar,
-                             "Fixef" = c("LandUse", "LandUse:Realm", "UseIntensity", "UseIntensity:Realm"),
-                             "LandUseVar" = LandUseVardf,
-                             "AIC" = aic$AIC,
-                             "R2Marginal" = R2$marginal, 
-                             "R2Conditional" = R2$conditional,
-                             "n" = nrow,
-                             "n_RB" = n_distinct(data$RB_tnc))
-  modelresults$deltaAIC = modelresults$AIC - min(modelresults$AIC)
-  modelresults = arrange(modelresults, AIC)
-  return(modelresults)
-}
-
-#creating function to make predicted values from model - specific to land use variable
-realmPredsLU_UI <- function(realm, model, data) {
-  nd <- data.frame(LU_UI_3=factor(
-    c("Primary Vegetation", 
-      "Secondary Vegetation_Minimal use", "Secondary Vegetation_Intense use", 
-      "Agriculture_Minimal use", "Agriculture_Intense use"),
-    levels=levels(data$LU_UI_3)))
-  nd$Realm <- factor(realm, levels = levels(data$Realm))
-  nd$LogRichness = 0
-  #95% confidence intervals
-  preds <- StatisticalModels::PredictGLMER(model = model, data = nd,
-                                           se.fit = TRUE, seMultiplier = 1.96, randEffs = F)
-  
-  preds$yplus <- ((exp(preds$yplus)/exp(preds$y[1]))*100)-100
-  preds$yminus <- ((exp(preds$yminus)/exp(preds$y[1]))*100)-100
-  preds$y <- ((exp(preds$y)/exp(preds$y[1]))*100)-100
-  
-  #75% confidence intervals
-  preds2 <- StatisticalModels::PredictGLMER(model = model, data = nd,
-                                            se.fit = TRUE, seMultiplier = 1.15, randEffs = F)
-  
-  preds2$yplus75 <- ((exp(preds2$yplus)/exp(preds2$y[1]))*100)-100
-  preds2$yminus75 <- ((exp(preds2$yminus)/exp(preds2$y[1]))*100)-100
-  preds2$y75 <- ((exp(preds2$y)/exp(preds2$y[1]))*100)-100
-  
-  
-  temp.df <- data.frame(Realm = nd$Realm, LU=nd$LU_UI_3, y=preds$y,lower=preds$yminus,upper=preds$yplus, y75 = preds2$y75, lower75=preds2$yminus75, upper75=preds2$yplus75)
-  
-}
-
-realmPredsLU <- function(realm, model, data) {
-  nd <- data.frame(LandUse=factor(
-    c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland"),
-    levels=levels(data$LandUse)))
-  nd$Realm <- factor(realm, levels = levels(data$Realm))
-  nd$LogRichness = 0
-  #95% confidence intervals
-  preds <- PredictGLMER(model = model, data = nd,
-                        se.fit = TRUE, seMultiplier = 1.96)
-  
-  preds$yplus <- ((exp(preds$yplus)/exp(preds$y[1]))*100)-100
-  preds$yminus <- ((exp(preds$yminus)/exp(preds$y[1]))*100)-100
-  preds$y <- ((exp(preds$y)/exp(preds$y[1]))*100)-100
-  
-  #75% confidence intervals
-  preds2 <- StatisticalModels::PredictGLMER(model = model, data = nd,
-                                            se.fit = TRUE, seMultiplier = 1.15, randEffs = F)
-  
-  preds2$yplus75 <- ((exp(preds2$yplus)/exp(preds2$y[1]))*100)-100
-  preds2$yminus75 <- ((exp(preds2$yminus)/exp(preds2$y[1]))*100)-100
-  preds2$y75 <- ((exp(preds2$y)/exp(preds2$y[1]))*100)-100
-  
-  
-  temp.df <- data.frame(Realm = nd$Realm, LU=nd$LandUse, y=preds$y,lower=preds$yminus,upper=preds$yplus, y75 = preds2$y75, lower75=preds2$yminus75, upper75=preds2$yplus75)
-  
-}
-
-realmPredsLU_UI_a <- function(realm, model, data) {
-  nd <- data.frame(LU_UI_3=factor(
-    c("Primary Vegetation", "Secondary Vegetation_Minimal use", "Secondary Vegetation_Intense use", "Agriculture_Minimal use", "Agriculture_Intense use"),
-    levels=levels(data$LU_UI_3)))
-  nd$Realm <- factor(realm, levels = levels(data$Realm))
-  nd$LogAbund = 0
-  preds <- PredictGLMER(model = model, data = nd,
-                        se.fit = TRUE, seMultiplier = 1.96, randEffs = F)
-  
-  preds$yplus <- ((exp(preds$yplus)/exp(preds$y[1]))*100)-100
-  preds$yminus <- ((exp(preds$yminus)/exp(preds$y[1]))*100)-100
-  preds$y <- ((exp(preds$y)/exp(preds$y[1]))*100)-100
-  
-  #75% confidence
-  #75% confidence intervals
-  preds2 <- StatisticalModels::PredictGLMER(model = model, data = nd,
-                                            se.fit = TRUE, seMultiplier = 1.15, randEffs = F)
-  
-  preds2$yplus75 <- ((exp(preds2$yplus)/exp(preds2$y[1]))*100)-100
-  preds2$yminus75 <- ((exp(preds2$yminus)/exp(preds2$y[1]))*100)-100
-  preds2$y75 <- ((exp(preds2$y)/exp(preds2$y[1]))*100)-100
-  
-  
-  temp.df <- data.frame(Realm = nd$Realm, LU=nd$LU_UI_3, y=preds$y,lower=preds$yminus,upper=preds$yplus, y75 = preds2$y75, lower75=preds2$yminus75, upper75=preds2$yplus75)
-  
-}
-
-realmPredsLU_a <- function(realm, model, data) {
-  nd <- data.frame(LandUse=factor(
-    c("Primary Vegetation", "Secondary Vegetation", "Plantation forest",  "Pasture","Cropland"),
-    levels=levels(data$LandUse)))
-  nd$Realm <- factor(realm, levels = levels(data$Realm))
-  nd$LogAbund = 0
-  preds <- PredictGLMER(model = model, data = nd,
-                        se.fit = TRUE, seMultiplier = 1.96)  
-  #95% CI
-  preds$yplus <- ((exp(preds$yplus)/exp(preds$y[1]))*100)-100
-  preds$yminus <- ((exp(preds$yminus)/exp(preds$y[1]))*100)-100
-  preds$y <- ((exp(preds$y)/exp(preds$y[1]))*100)-100
-  
-  #75% confidence intervals
-  preds2 <- StatisticalModels::PredictGLMER(model = model, data = nd,
-                                            se.fit = TRUE, seMultiplier = 1.15, randEffs = F)
-  
-  preds2$yplus75 <- ((exp(preds2$yplus)/exp(preds2$y[1]))*100)-100
-  preds2$yminus75 <- ((exp(preds2$yminus)/exp(preds2$y[1]))*100)-100
-  preds2$y75 <- ((exp(preds2$y)/exp(preds2$y[1]))*100)-100
-  
-  
-  temp.df <- data.frame(Realm = nd$Realm, LU=nd$LandUse, y=preds$y,lower=preds$yminus,upper=preds$yplus, y75 = preds2$y75, lower75=preds2$yminus75, upper75=preds2$yplus75)
-  
-}
+source('code/BiomeModelFunctions.R')
 
 # 3. DATA -----------------------------------------------------------------
-data <- readRDS('Data/03_PREDICTSModelData.rds')
+data <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
 dim(data)
+
 # 4. SCRIPT ---------------------------------------------------------------
 ## 4.1 Prep and subset data ------------------------------------------------
 
@@ -230,52 +72,63 @@ table(Biome4_abund$Realm, Biome4_abund$LU_UI_3, useNA = 'always')
 ## 4.2 Selecting model structure -------------------------------------------
 
 #test random effects
-r0 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
+r0 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+r1 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|my_taxa)", REML = F)
+r2 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
-r1 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
-                               randomStruct = "(1|SS)", REML = F)
-r2 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
+r3 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SSB)+(1|my_taxa)", REML = F)
+r4 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
                                randomStruct = "(1|SSB)", REML = F)
-r3 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm'
+r5 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SS)", REML = F)
+r6 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|my_taxa)", REML = F)
+r7 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*RB_tnc'
                                , randomStruct = 0, REML = F)
-
-AIC(r0$model, r1$model, r2$model)
-#SS & SSB is best
+AIC(r0$model, r1$model, r2$model, r3$model,r4$model,r5$model,r6$model)
+#SS & SSB & my_taxa is best
 
 #check best land use structure
 
-L40 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+L10 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                                fitFamily = 'poisson', fixedStruct = 'LandUse*Realm', 
+                                randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
-l41 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse2*Realm', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+l11 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                                fitFamily = 'poisson', fixedStruct = 'LandUse2*Realm', 
+                                randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
-l42 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse3*Realm', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+l12 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                                fitFamily = 'poisson', fixedStruct = 'LandUse3*Realm', 
+                                randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
-l43 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse4*Realm', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
-l44 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse5*Realm', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
+l13 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                                fitFamily = 'poisson', fixedStruct = 'LandUse4*Realm', 
+                                randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+l14 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                                fitFamily = 'poisson', fixedStruct = 'LandUse5*Realm', 
+                                randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
 
 
 
-aic <- AIC(L40$model, l41$model, l42$model, l43$model, l44$model)
+aic <- AIC(L10$model, l11$model, l12$model, l13$model, l14$model)
 R2 <- NULL
-R2[[1]] <- R2GLMER(L40$model)
-R2[[2]] <- R2GLMER(l41$model)
-R2[[3]] <- R2GLMER(l42$model)
-R2[[4]] <- R2GLMER(l43$model)
-R2[[5]] <- R2GLMER(l44$model)
+R2[[1]] <- R2GLMER(L10$model)
+R2[[2]] <- R2GLMER(l11$model)
+R2[[3]] <- R2GLMER(l12$model)
+R2[[4]] <- R2GLMER(l13$model)
+R2[[5]] <- R2GLMER(l14$model)
 R2 <- rbindlist(R2)
 
 B4LUsel <- data.frame(Dataset = "Biome4", 
@@ -293,11 +146,15 @@ B4LUsel = arrange(B4LUsel, AIC)
 
 
 # 4.3: Run Models ----------------------------------------------------------
+#remove where use intensity = NA
+Biome4 = Biome4[!is.na(Biome4$Use_intensity),]
+Biome4 = filter(Biome4, my_taxa != 'Fungi')
+Biome4 = filter(Biome4, Realm != 'Australasia')
 
 #model selection
 #using biome models function from biome1 script
-B4sr<- Biomemodels1(data = Biome4[!is.na(Biome4$Use_intensity),], responseVar = 'LogRichness', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3')
-B4A <- Biomemodels1(data = Biome4[!is.na(Biome4$Use_intensity),], responseVar = 'LogAbund', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3')
+B4sr<- Biomemodels1(data = Biome4, responseVar = 'Species_richness', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3', fitfamily = 'poisson')
+B4A <- Biomemodels1(data = Biome4, responseVar = 'LogAbund', LandUseVar = "LandUse", UseIntensityVar = 'LU_UI_3', fitfamily = 'gaussian')
 
 B4 <- rbind(B4sr, B4A)
 B4$Dataset = 'Biome4'
@@ -323,21 +180,21 @@ TS6
 save_as_image(TS6, 'Output/TableS6_Biome4Models.png')
 save_as_docx(TS6, path = 'Output/TableS6_Biome4Models.docx')
 
-b0 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse', 
+#run models to be used in figures
+b0 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse', 
                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
 
+b1 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LandUse*Realm', 
+                               randomStruct = "(1|SS)", REML = F)
 
-b1 <- StatisticalModels::GLMER(modelData = Biome4[!is.na(Biome4$Use_intensity),], responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LandUse*Realm', 
+b2 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LU_UI_3', 
                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
 
-b2 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LU_UI_3', 
-                               randomStruct = "(1|SS)+(1|SSB)", REML = F)
-
-b3 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "LogRichness",
-                               fitFamily = 'gaussian', fixedStruct = 'LU_UI_3*Realm', 
+b3 <- StatisticalModels::GLMER(modelData = Biome4, responseVar = "Species_richness",
+                               fitFamily = 'poisson', fixedStruct = 'LU_UI_3*Realm', 
                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
 
 
@@ -349,6 +206,7 @@ R2GLMER(b1$model)
 R2GLMER(b2$model)
 R2GLMER(b3$model)
 
+Biome4_abund = Biome4[!is.na(Biome4$LogAbund),]
 #Abundance models
 ba0 <- StatisticalModels::GLMER(modelData = Biome4_abund[!is.na(Biome4_abund$Use_intensity),], responseVar = "LogAbund",
                                 fitFamily = 'gaussian', fixedStruct = 'LandUse', 
@@ -378,7 +236,7 @@ test <- sapply(RealmB4, FUN = function(realm) {
 B4_LU<- apply(RealmB4, 1, FUN = realmPredsLU, model = b1$model, data = Biome4[!is.na(Biome4$Use_intensity),])
 B4_LU <- data.table::rbindlist(B4_LU)
 for ( i in 1:nrow(B4_LU)) {
-  B4_LU$n[i] <- nrow(subset(Biome4[!is.na(Biome4$Use_intensity),], Realm == B4_LU$Realm[i] & LandUse == B4_LU$LU[i]))
+  B4_LU$n[i] <- nrow(subset(Biome4, Realm == B4_LU$Realm[i] & LandUse == B4_LU$LU[i]))
 }
 
 level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
@@ -386,9 +244,9 @@ level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation fo
 figB4.a <- ggplot(B4_LU[B4_LU$n > 25,], aes(x = factor(LU, levels = level_order_LU), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
   geom_point(position = position_dodge(width = 0.6), size = 5) + 
-  scale_colour_manual(values = c("#E78AC3", "#A6D854", '#8DA0CB', "#FFD92F")) +
-  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
-  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) +
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), linewidth = 1) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), linewidth = 2) +
   geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100), hjust = 1.1,  data = B4_LU[B4_LU$n > 25 & B4_LU$upper > 100,], colour = 'black') +
   coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = '', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr')) +
@@ -422,10 +280,10 @@ level_order <- c("Primary Vegetation", "Secondary Vegetation_Minimal use", "Seco
 
 figB4.b <- ggplot(B4_LUUI3[B4_LUUI3$n > 25,], aes(x = factor(LU, levels = LandUseFact), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
-  scale_colour_manual(values = c("#E78AC3", "#A6D854", '#8DA0CB', "#FFD92F")) +
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) +
   geom_point(position = position_dodge(width = 0.6), size = 5) + 
-  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
-  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), linewidth = 1) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), linewidth = 2) +
   geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  data = B4_LUUI3[B4_LUUI3$n > 25 & B4_LUUI3$upper > 100,], colour = 'black') +
   coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = '', labels = c('PV', 'SV-M', 'SV-I' ,'Agr-M', 'Agr-I')) +
@@ -453,10 +311,10 @@ for ( i in 1:nrow(B4_LU_a)) {
 figB4.c <- ggplot(B4_LU_a[B4_LU_a$n > 25,], aes(x = factor(LU, levels = level_order_LU), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
   geom_point(position = position_dodge(width = 0.6), size = 5) + 
-  scale_colour_manual(values = c("#E78AC3", "#A6D854", '#8DA0CB', "#FFD92F")) +
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) +
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
-  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
-  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), linewidth = 1) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), linewidth = 2) +
   geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1, angle = 45, data = B4_LU_a[B4_LU_a$n > 25 & B4_LU_a$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
   coord_cartesian(ylim = c(-100,100)) +
   scale_x_discrete(name = 'Land Use', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr')) +
@@ -467,7 +325,7 @@ figB4.c <- ggplot(B4_LU_a[B4_LU_a$n > 25,], aes(x = factor(LU, levels = level_or
     #strip.background = element_blank(),
     legend.title = element_blank(),
     text = element_text(size = 20, colour = 'black')) +
-  ggtitle('c')
+  ggtitle('a')
 
 figB4.c
 #ggsave("FinalScriptsAndData/Figs/attempt2/Biome4_LU_aRealm.png")
@@ -486,7 +344,7 @@ B4_LUUI3_a <- cbind(B4_LUUI3_a, LandUse, UseIntensity)
 figB4.d <- ggplot(B4_LUUI3_a[B4_LUUI3_a$n > 25,], aes(x = factor(LU, levels = LandUseFact), y = y, ymax = upper, ymin = lower, colour = Realm)) +
   geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
   geom_point(position = position_dodge(width = 0.6), size = 5) +
-  scale_colour_manual(values = c("#E78AC3", "#A6D854", '#8DA0CB', "#FFD92F")) + 
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) + 
   geom_errorbar(width = 0.2, position = position_dodge(width = 0.6), size = 1) +
   geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.6), size = 2) +
   geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  angle = 45, data = B4_LUUI3_a[B4_LUUI3_a$n > 25 & B4_LUUI3_a$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
@@ -499,19 +357,202 @@ figB4.d <- ggplot(B4_LUUI3_a[B4_LUUI3_a$n > 25,], aes(x = factor(LU, levels = La
     #strip.background = element_blank(),
     legend.title = element_blank(),
     text = element_text(size = 20, colour = 'black')) +
-  ggtitle('d')
+  ggtitle('b')
 
 figB4.d
 
 
+# Fig 5 -------------------------------------------------------------------
+
+
 l <- cowplot::get_legend(figB4.a + theme(legend.position = "bottom"))
 
-cowplot::plot_grid(l)/(figB4.a + figB4.b + figB4.c + figB4.d) + 
-  plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none") 
-ggsave("Figs/Fig5.png", width = 13.7, height = 12)
+#plotting species richness only, abundance for supplementary:
+(cowplot::plot_grid(l) + plot_spacer())/(figB4.a + figB4.b) + 
+  plot_layout(heights = unit(c(1,10), "cm")) & theme(legend.position = "none")
+#plot_annotation(title = "main title") 
+ggsave("Figs/Fig5_SR.png", width = 13.7, height = 12)
 #make sure graphics box is tall & wide enough to stop text overlapping.
 #Saving 13.7 x 12 in image
+
+#abundance plots for supplementary:
+(cowplot::plot_grid(l) + plot_spacer())/(figB4.c + figB4.d) + 
+  plot_layout(heights = unit(c(1,10), "cm")) & theme(legend.position = "none")
+#plot_annotation(title = "main title") 
+ggsave("Figs/FigS2_A.png", width = 13.7, height = 12)
+
+#All 4 plots:
+# cowplot::plot_grid(l)/(figB1.a + figB1.b + figB1.c + figB1.d) + 
+#   plot_layout(heights = unit(c(1,20), "cm")) & theme(legend.position = "none")
+# #plot_annotation(title = "main title") 
+# ggsave("Figs/Fig4.png", width = 13.7, height = 12)
+# #make sure graphics box is tall & wide enough to stop text overlapping.
+# #Saving 13.7 x 12 in imagewrite.csv(Biome4, "Figs/Maps/Biome4.csv", row.names = F)
+
 write.csv(Biome4, "Figs/Maps/Biome4.csv", row.names = F)
+
+# Taxon case study --------------------------------------------------------
+
+#I think the ranges of individual species might be varying a lot, so some kind of scaling is needed
+
+unique(Biome4$my_taxa)
+table(Biome4$LandUse, Biome4$my_taxa)
+
+Biome4 %>%
+  group_by(my_taxa) %>%
+  summarise(min = min(Species_richness), max = max(Species_richness))
+
+#just vertebrates
+Biome4_v = filter(Biome4, my_taxa == 'Vertebrate')
+
+b4v <- StatisticalModels::GLMER(modelData = Biome4_v, 
+                                responseVar = "Species_richness",
+                                fitFamily = 'poisson', 
+                                fixedStruct = 'LandUse*Realm',
+                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
+#list realms in this biome
+RealmB4v <- data.frame(Realm = unique(Biome4_v$Realm))
+
+#check its the right realms
+test <- sapply(RealmB4v, FUN = function(realm) {
+  cat(paste0(realm,'\n'))
+})
+
+
+B4_LUv<- apply(RealmB4v, 1, FUN = realmPredsLU, model = b4v$model, data = Biome4_v)
+B4_LUv <- data.table::rbindlist(B4_LUv)
+for ( i in 1:nrow(B4_LUv)) {
+  B4_LUv$n[i] <- nrow(subset(Biome4_v, Realm == B4_LUv$Realm[i] & LandUse == B4_LUv$LU[i]))
+}
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
+
+
+figB4v.a <- ggplot(B4_LUv[B4_LUv$n > 25,], aes(x = factor(LU, levels = level_order_LU),y = y, ymax = upper, ymin = lower, colour = Realm)) +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
+  geom_point(position = position_dodge(width = 0.7), size = 3) +
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) + 
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.7), size = 0.7) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.7), size = 1.5) +
+  coord_cartesian(ylim = c(-100,100)) +
+  scale_x_discrete(name = '', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr'), drop = F) +
+  scale_y_continuous(name = 'Change in Species Richness (%)') +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  angle = 45, data = B4_LUv[B4_LUv$n > 25 & B4_LUv$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
+  theme_bw() +
+  theme(#panel.grid.major = element_blank(),
+    #panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    #legend.position = "none",
+    legend.title = element_blank(),
+    text = element_text(size = 20, colour = 'black')) +
+  ggtitle("a")
+
+figB4v.a
+
+#just invertebrates
+Biome4_i = filter(Biome4, my_taxa == 'Invertebrate')
+
+B4i <- StatisticalModels::GLMER(modelData = Biome4_i, 
+                                responseVar = "Species_richness",
+                                fitFamily = 'poisson', 
+                                fixedStruct = 'LandUse*Realm',
+                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
+#list realms in this biome
+RealmB4i <- data.frame(Realm = unique(Biome4_i$Realm))
+
+#check its the right realms
+test <- sapply(RealmB4i, FUN = function(realm) {
+  cat(paste0(realm,'\n'))
+})
+
+B4_LUi<- apply(RealmB4i, 1, FUN = realmPredsLU, model = B4i$model, data = Biome4_i)
+B4_LUi <- data.table::rbindlist(B4_LUi)
+for ( i in 1:nrow(B4_LUi)) {
+  B4_LUi$n[i] <- nrow(subset(Biome4_i, Realm == B4_LUi$Realm[i] & LandUse == B4_LUi$LU[i]))
+}
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
+B4_LUi
+
+#the sample size is slightly higher here because neotropic pasture has infinite values, so presenting the resultso f this are not helpful. 
+figB4i.a <- ggplot(B4_LUi[B4_LUi$n > 36,], aes(x = factor(LU, levels = level_order_LU),y = y, ymax = upper, ymin = lower, colour = Realm)) +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
+  geom_point(position = position_dodge(width = 0.7), size = 3) +
+  scale_colour_manual(values = c("#A6D854", '#8DA0CB', "#FFD92F")) + 
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.7), linewidth = 0.7) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.7), linewidth = 1.5) +
+  coord_cartesian(ylim = c(-100,100)) +
+  scale_x_discrete(name = '', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr'), drop = F) +
+  scale_y_continuous(name = '') +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  angle = 45, data = B4_LUi[B4_LUi$n > 36 & B4_LUi$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
+  #geom_text(aes(y = lower ), position="identity", color = 'black', size = 3, angle = 45) +       
+  theme_bw() +
+  theme(#panel.grid.major = element_blank(),
+    #panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    #legend.position = "none",
+    legend.title = element_blank(),
+    text = element_text(size = 20, colour = 'black'))+
+  ggtitle("b")
+
+figB4i.a
+figB4v.a
+
+#just plants
+Biome4_p = filter(Biome4, my_taxa == 'Plant')
+
+B4p <- StatisticalModels::GLMER(modelData = Biome4_p, 
+                                responseVar = "Species_richness",
+                                fitFamily = 'poisson', 
+                                fixedStruct = 'LandUse*Realm',
+                                randomStruct = "(1|SS)+(1|SSB)", REML = F)
+#n = 5536
+#list realms in this biome
+RealmB4p <- data.frame(Realm = unique(Biome4_p$Realm))
+
+#check its the right realms
+test <- sapply(RealmB4p, FUN = function(realm) {
+  cat(paste0(realm,'\n'))
+})
+
+
+B4_LUp<- apply(RealmB4p, 1, FUN = realmPredsLU, model = B4p$model, data = Biome4_p)
+B4_LUp <- data.table::rbindlist(B4_LUp)
+for ( i in 1:nrow(B4_LUp)) {
+  B4_LUp$n[i] <- nrow(subset(Biome4_p, Realm == B4_LUp$Realm[i] & LandUse == B4_LUp$LU[i]))
+}
+level_order_LU <- c("Primary Vegetation", "Secondary Vegetation", "Plantation forest", "Pasture","Cropland")
+
+
+figB4p.a <- ggplot(B4_LUp[B4_LUp$n > 25,], aes(x = factor(LU, levels = level_order_LU),y = y, ymax = upper, ymin = lower, colour = Realm)) +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey') +
+  geom_point(position = position_dodge(width = 0.7), size = 3) +
+  scale_colour_manual(values = c('#8DA0CB', "#FFD92F")) + geom_errorbar(width = 0.2, position = position_dodge(width = 0.7), linewidth = 0.7) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.7), linewidth = 0.7) +
+  geom_errorbar(width = 0, aes(ymin = lower75, ymax = upper75), position = position_dodge(width = 0.7), linewidth = 1.5) +
+  coord_cartesian(ylim = c(-100,100)) +
+  scale_x_discrete(name = '', labels = c('PV', 'SV', 'PF', 'Pa' ,'Cr'), drop = F) +
+  scale_y_continuous(name = '') +
+  geom_text(aes(x = LU, group = Realm, label = signif(upper,3), y =100, ), hjust = 1,  angle = 45, data = B4_LUp[B4_LUp$n > 25 & B4_LUp$upper > 100,], colour = 'black', position = position_dodge(width = 0.6)) +
+  theme_bw() +
+  theme(#panel.grid.major = element_blank(),
+    #panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    #legend.position = "none",
+    legend.title = element_blank(),
+    text = element_text(size = 20, colour = 'black'))+
+  ggtitle("c")
+
+figB4p.a
+figB4i.a
+figB4v.a
+
+l <- cowplot::get_legend(figB4i.a + theme(legend.position = "bottom"))
+
+(cowplot::plot_grid(l)+plot_spacer())/(figB4v.a + figB4i.a + figB4p.a) + 
+  plot_layout(heights = unit(c(1,10), "cm")) & theme(legend.position = "none")
+#plot_annotation(title = "main title") 
+
+ggsave("Figs/taxa/Biome4_SR_poisson.png", width = 13.7, height = 6)
+
 
 
 
@@ -521,7 +562,7 @@ write.csv(Biome4, "Figs/Maps/Biome4.csv", row.names = F)
 
 nd <- data.frame(LandUse = factor(levels(b0$data$LandUse),
                                   levels = levels(b0$data$LandUse)),
-                 LogRichness = 0)
+                 Species_richness = 0)
 
 preds <- StatisticalModels::PredictGLMER(model = b0$model, data = nd,
                                          se.fit = TRUE, seMultiplier = 1.96, randEffs = F)
@@ -558,7 +599,7 @@ ggsave(filename = 'Figs/Biome4LU.png')
 
 nd <- data.frame(LU_UI_3 = factor(levels(b2$data$LU_UI_3),
                                   levels = levels(b2$data$LU_UI_3)),
-                 LogRichness = 0)
+                 Species_richness = 0)
 
 preds <- StatisticalModels::PredictGLMER(model = b2$model, data = nd,
                                          se.fit = TRUE, seMultiplier = 1.96, randEffs = F)
@@ -592,7 +633,5 @@ figb <- ggplot(temp.df, aes(x = factor(LU_UI_3), y = y, ymax = upper, ymin = low
 
 figb
 ggsave(filename = 'Figs/Biome4LU_UI.png')
-
-
 
 
