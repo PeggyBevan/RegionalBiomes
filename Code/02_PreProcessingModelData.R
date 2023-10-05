@@ -19,25 +19,17 @@
 
 # 1. Packages ----------------------------------------------------------------
 
-#library(rgdal)  # readOGR() spTransform()
 library(dplyr) #mutate()
-#library(kableExtra) #kable() (R markdown only)
 library(knitr)
 library(tidyr) #drop_na()
-#library(lme4) #glmer()
-#install.packages("../MetaAnalysis/Data/RawData/PredictsData/roquefort_0.1-2.tar.gz", repos = NULL, type = "source")
-#library(roquefort)
-#library(sjPlot)
-#library(flextable)
-#library(data.table)
 library(reshape2)
 
 # 2. Load Data --------------------------------------------------------------------
 
 # PREDICTS: Load dataframe from script 01. Each row is a site or block of a study, with biodiversity metrics e.g. total abundance. 
-BD<- read.csv("/Data/02_PREDICTSDivMetrics.csv", stringsAsFactors = T)
+BD<- read.csv("Data/02_PREDICTSDivMetrics_taxa.csv", stringsAsFactors = T)
 dim(BD)
-# 22678 40
+# 22582 36
 
 # 3. Prep Data --------------------------------------------------------------------
 
@@ -138,6 +130,7 @@ BD <- BD %>%
   ),
   #log response variables
   LogAbund = log(Total_abundance+1),
+  
   LogRichness = log(Species_richness+1)
   ) %>%
   #class 'Light' use intensity as 'minimal'
@@ -174,10 +167,6 @@ BD$LU_UI_5 <- factor(BD$LU_UI_5, c("Primary Vegetation_Minimal use", "Primary Ve
 
 # create taxa variables
 
-#change blank cells to NA
-BD$Class <- as.character(BD$Class)
-BD$Class[BD$Class==""] <- NA
-BD$Class <- as.factor(BD$Class)
 
 BD <- BD %>%
   mutate(CommonTaxon_Phylum = recode(Phylum, 
@@ -224,8 +213,17 @@ BD$CommonTaxon <- coalesce(BD$CommonTaxon, BD$CommonTaxon_Phylum) %>%
 
 table(BD$CommonTaxon)
 
+#removing awkward studies
+#BD <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
+BD %>%
+  group_by(my_taxa) %>%
+  summarise(min = min(Species_richness), max = max(Species_richness))
+
+BD %>%
+  group_by(my_taxa) %>%
+  summarise(min = min(Total_abundance, na.rm = T), max = max(Total_abundance, na.rm = T))
 
 #For now, lets save the dataset. 
-write.csv(BD, 'Data/03_PREDICTSModelData.csv', row.names = F)
+write.csv(BD, 'Data/03_PREDICTSModelData_taxa.csv', row.names = F)
 #RDS is better as it saves level orders of factors
-saveRDS(BD, 'Data/03_PREDICTSModelData.rds')
+saveRDS(BD, 'Data/03_PREDICTSModelData_taxa.rds')
