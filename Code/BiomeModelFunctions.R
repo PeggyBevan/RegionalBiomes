@@ -11,7 +11,7 @@
 Biomemodels1 <- function(data, responseVar, LandUseVar, UseIntensityVar, fitfamily) {
   m <- NULL
   m[[1]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'poisson', fixedStruct = paste(LandUseVar), 
+                                     fitFamily = fitfamily, fixedStruct = paste(LandUseVar), 
                                      randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[2]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
@@ -19,11 +19,11 @@ Biomemodels1 <- function(data, responseVar, LandUseVar, UseIntensityVar, fitfami
                                      randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[3]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'poisson', fixedStruct = paste0(UseIntensityVar), 
+                                     fitFamily = fitfamily, fixedStruct = paste0(UseIntensityVar), 
                                      randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   m[[4]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
-                                     fitFamily = 'poisson', fixedStruct = paste0(UseIntensityVar, "*Realm"), 
+                                     fitFamily = fitfamily, fixedStruct = paste0(UseIntensityVar, "*Realm"), 
                                      randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
   
   aic <- AIC(m[[1]]$model, m[[2]]$model, m[[3]]$model, m[[4]]$model)
