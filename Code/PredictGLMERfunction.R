@@ -1,4 +1,4 @@
-# PredictGLMER function - from Tim Newbold's package (couldn't get package to load)
+# PredictGLMER function - from Tim Newbold's package (sometimes its difficult to load the package)
 
 PredictGLMER <- function(model,data,se.fit=FALSE,seMultiplier = 1.96,randEffs = FALSE){
 # stopifnot((class(model)[1] == "lmerMod") | (class(model)[1] == "glmerMod"))
