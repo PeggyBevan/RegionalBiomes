@@ -1,6 +1,4 @@
 #02 - Prep model data
-# Author: Peggy Bevan
-# Date: 20/01/2021
 
 # **Part1:**
 #   
@@ -18,7 +16,6 @@
 # - SAVE data for model - 'Data/03_PREDICTSModelData.csv'
 
 # 1. Packages ----------------------------------------------------------------
-
 library(dplyr) #mutate()
 library(knitr)
 library(tidyr) #drop_na()
@@ -29,7 +26,6 @@ library(reshape2)
 # PREDICTS: Load dataframe from script 01. Each row is a site or block of a study, with biodiversity metrics e.g. total abundance. 
 BD<- read.csv("Data/02_PREDICTSDivMetrics_taxa.csv", stringsAsFactors = T)
 dim(BD)
-# 22582 36
 
 # 3. Prep Data --------------------------------------------------------------------
 
@@ -87,7 +83,6 @@ BD <- BD %>%
                      'Young secondary vegetation' = 
                        'Secondary Vegetation'
     ),
-    LandUse = na_if(LandUse, "Cannot decide"),
     Use_intensity = na_if(Use_intensity, "Cannot decide")
   )
 # put into order so Primary Veg is reference level
@@ -144,7 +139,6 @@ BD <- BD %>%
          LU_UI_5 = ifelse(is.na(Use_intensity), NA, paste0(LandUse5, '_', Use_intensity))
          ) 
 
-
 unique(BD$Use_intensity)
 
 BD$LU_UI <- as.factor(BD$LU_UI)
@@ -165,65 +159,7 @@ BD$LU_UI_4 <- factor(BD$LU_UI_4, c("Primary Vegetation_Minimal use", "Primary Ve
 BD$LU_UI_5 <- factor(BD$LU_UI_5, c("Primary Vegetation_Minimal use", "Primary Vegetation_Intense use", "Secondary Vegetation_Minimal use", "Secondary Vegetation_Intense use", "Agriculture_Minimal use", "Agriculture_Intense use", "Plantation forest_Minimal use","Plantation forest_Intense use")) %>%
   droplevels()
 
-# create taxa variables
-
-
-BD <- BD %>%
-  mutate(CommonTaxon_Phylum = recode(Phylum, 
-                                     "Annelida" = 'Invertebrate',
-                                     "Arthropoda" = 'Invertebrate',
-                                     "Ascomycota" = 'Fungi',
-                                     "Basidiomycota" = 'Fungi',
-                                     "Bryophyta" = 'Plant',      
-                                     "Chordata" = 'Vertebrate',
-                                     "Glomeromycota" = 'Fungi',
-                                     "Mollusca" = 'Invertebrate',
-                                     "Nematoda" = 'Invertebrate', 
-                                     "Platyhelminthes" = 'Invertebrate',
-                                     "Tracheophyta" = 'Plant')
-         ,
-         CommonTaxon = recode(Class,
-                              "Adenophorea" = 'Plant',
-                              "Agaricomycetes" = 'Fungi',
-                              "Amphibia" = 'Herptile',
-                              "Arachnida" = 'Invertebrate',
-                              "Aves" = "Bird",
-                              "Bryopsida" = 'Plant',"Chilopoda" = 'Invertebrate',
-                              "Clitellata" = 'Invertebrate',
-                              "Entognatha" = 'Invertebrate',
-                              "Eurotiomycetes" = 'Fungi',
-                              "Gastropoda" = 'Invertebrate',
-                              "Glomeromycetes" = "Fungi",
-                              "Insecta" = "Invertebrate",
-                              "Jungermanniopsida" = "Plant",
-                              "Lecanoromycetes" = "Fungi",
-                              "Liliopsida" = "Plant", 
-                              "Magnoliopsida" = "Plant",
-                              "Malacostraca"  = "Invertebrate",
-                              "Mammalia" = "Mammal",         
-                              "Pinopsida" = "Plant",
-                              "Polypodiopsida" = "Plant",
-                              "Reptilia" = "Herptile",
-                              "Secernentea" = "Invertebrate")
-  )
-#In some cases, the highest common class could not be named. Using Coalesce to fill these
-# empties based on my edited version of Phylum
-BD$CommonTaxon <- coalesce(BD$CommonTaxon, BD$CommonTaxon_Phylum) %>%
-  droplevels()
-
-table(BD$CommonTaxon)
-
-#removing awkward studies
-#BD <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
-BD %>%
-  group_by(my_taxa) %>%
-  summarise(min = min(Species_richness), max = max(Species_richness))
-
-BD %>%
-  group_by(my_taxa) %>%
-  summarise(min = min(Total_abundance, na.rm = T), max = max(Total_abundance, na.rm = T))
-
-#For now, lets save the dataset. 
+#save the dataset. 
 write.csv(BD, 'Data/03_PREDICTSModelData_taxa.csv', row.names = F)
 #RDS is better as it saves level orders of factors
 saveRDS(BD, 'Data/03_PREDICTSModelData_taxa.rds')

@@ -1,14 +1,12 @@
 # 03_ExploreData
-# Author: Peggy Bevan
-# Date: 20/01/2021
-
-#In this script:
-# Packages
-# Data
-# Script
+#Order of code:
+# 1. Packages
+# 2. Load Data
+# 3. Script
   #Regional biomes
 #  - creating ecoregs - list of all existing RBs & how many studies are in BD for each one
 #  - save 01_RBSamplingEffort.png - the table that shows representation across regional biomes in the predicts data base - before anything has been removed. Table S1
+  
   #Land Use
 # - create a table to show land-use sampling effort, including 'human-dominated' - the sum of pasture, cropland and plantation forest.
 # - saved as 05_RBLandUseSummary.csv
@@ -23,12 +21,11 @@
 
 
 # Packages ----------------------------------------------------------------
-
 library(rgdal)  # readOGR() spTransform()
 library(dplyr) # n_distinct(), count()
 library(flextable) #flextable()
 library(tidyr) #spread()
-
+library(officer) #prop_section, for saving tables as .docx
 
 # Data --------------------------------------------------------------------
 
@@ -115,7 +112,7 @@ for (i in (1:nrow(ecoregs))) {
   ecoregs$p_ecoregions[i] = round(ecoregs$n_ecoregions[i]/ecoregs$t_ecoregions[i], 2)
 }
 
-write.csv(ecoregs, 'FinalScriptsAndData/Data/04_RBsummary.csv', row.names = F)
+write.csv(ecoregs, 'Data/04_RBsummary.csv', row.names = F)
 
 #That ends up looking like this:
 
@@ -196,13 +193,10 @@ save_as_docx(TS1b, path = 'Output/TS1b_RegionalBiomeList.docx')
 
 LU <- BD %>% count(RB_tnc, LandUse) %>% 
   spread(LandUse, n)
-
 ecoregs<- merge(ecoregs, LU, by.x = 'RB_tnc', all.x = TRUE)
 
 #create agriculture count
-
 ecoregs$Agriculture <- rowSums(ecoregs[,16:18], na.rm = T)
-
 
 # Taxon Sampling Effort ---------------------------------------------------
 
@@ -229,6 +223,7 @@ flextable(e)
 #fungi are not well studied anywhere tropical. 
 # no mammal studies in nearctic realm. 
 #everywhere else pretty well spread out.
+table(BD$)
 
 Taxa <- BD %>% count(RB_tnc, my_taxa) %>% spread(my_taxa, n)
 ecoregs<- merge(ecoregs, Taxa, by.x = 'RB_tnc', all.x = TRUE)
@@ -265,6 +260,45 @@ save_as_docx(f4, path = 'Figs/03_TaxaSamplingEffort.docx')
 
 #Some regional biomes are only represented by one or two taxa groups, meaning they probably aren't representative of the RB as a whole. 
 # --we have to assume that the representation of taxa are proportional to the number of taxa in that RB.
+
+#supplementary fig - taxon per regional biome, only studied biomes
+ecoregs_dd <- ecoregs %>%
+  subset(Biome != "Tundra") %>%
+  subset(Biome != "Flooded Grasslands & Savannas") %>%
+  subset(Biome != "Mangroves") %>%
+  subset(n_sites > 1)
+
+ecoregs_dd = subset(ecoregs_dd, Biome_num == 1 | Biome_num == 4 | Biome_num == 7)
+
+ft <- ecoregs_dd[,c(5,4,3,14:17)]
+ft <- arrange(ft, Biome_num)
+ft[is.na(ft)] = 0 
+ft <- flextable(ft[,c(1,2,4:7)])
+ft <- merge_v(ft, j = ~ Biome)
+
+typology <- data.frame(
+  col_keys = ft$col_keys,
+  type = c("Regional Biome", "Regional Biome",
+           'Number of sites', 
+           'Number of sites', 
+           'Number of sites', 
+           'Number of sites'
+  ),
+  what = c("Biome", "Realm", 
+           'Fungi',  
+           'Invertebrate', 'Plant', 
+           'Vertebrate'),
+  stringsAsFactors = FALSE )
+
+ft <- set_header_df(ft, mapping = typology, key = 'col_keys')
+ft <- merge_h(ft, part = "header")
+ft <- merge_v(ft, part = "header")
+ft <- align(ft, i = 1:2, part = 'header', align = 'left')
+ft <- theme_vanilla(ft)
+ft <- fix_border_issues(ft)
+ft
+save_as_image(ft, 'Figs/03_TaxaSamplingEffort.png')
+save_as_docx(ft, path = 'Figs/03_TaxaSamplingEffort.docx')
 
 # 7. Summary table of RBs & Save -------------------------------------------------
 
@@ -304,10 +338,7 @@ ecoregs <- ecoregs %>%
          Ag.th25 = if_else(Agriculture > 25, 1, 0, missing = 0),
          Ag.th50 = if_else(Agriculture > 50, 1, 0, missing = 0)
          )
-
-
-
-#save ecoregs 
+#save ecoregs
 write.csv(ecoregs, "Data/04_RBsummary_taxa.csv", row.names = F)
 
 #for supplementary material
@@ -316,8 +347,7 @@ sp.ecos <- ecoregs[,c(1:6,8,9,11,12,13)]
 write.csv(sp.ecos, "Figs/RBcoverage_taxa.csv", row.names = F)
 
 
-
-# TS2 - LandUse Explanation Table -----------------------------------------
+# Table S2 - LandUse Explanation Table -----------------------------------------
 
 TS2df = data.frame('Predominant habitat' = 
                      c('Primary vegetation',

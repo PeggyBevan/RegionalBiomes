@@ -1,25 +1,13 @@
-# Author: Peggy Bevan
-# Date: 12/01/2021
 # Title: 1. Creating site level biodiversity metrics in PREDICTS
 
 
 # Packages ----------------------------------------------------------------
-# install.packages(c("geosphere", "ape", "geiger", "wordcloud"))
-# install.packages("Data/PredictsData/yarg_0.1-14.tar.gz", repos = NULL, type = "source")
-# 
-# install.packages("glmmADMB", repos = "http://R-Forge.R-project.org")
-# 
-# install.packages("Data/PredictsData/roquefort_0.1-2.tar.gz", repos = NULL, type = "source")
-
-
 library(dplyr)  # %>% select() filter() bind_rows()
 library(rgdal)
 library(devtools)
 
 install_github(repo = "timnewbold/predicts-demo",subdir = "predictsFunctions")
-
 library(predictsFunctions)
-
 
 # Data --------------------------------------------------------------------
 
@@ -48,36 +36,8 @@ diversity <- predictsFunctions::CorrectSamplingEffort(diversity = diversity)
 diversity <- predictsFunctions::MergeSites(diversity, silent = TRUE)
 
 
-# Site level diversity metrics - no taxa ----------------------------------
-#calculate site level diversity metrics - no taxa
-# this code takes > 10 mins to run
-# sites <- diversity %>%
-#   # add Diversity_metric_is_valid column
-#   mutate(Diversity_metric_is_valid = TRUE) %>%
-#   # calculate SiteMetrics  , including extra columns you want to keep
-#   yarg::SiteMetrics(extra.cols = c("SSB", "SSBS", "Predominant_land_use", "Diversity_metric_unit", "Sampling_effort_unit", "Study_common_taxon", "Rank_of_study_common_taxon", "Country", "Ecoregion", "Biome", "Realm", "Wilderness_area", "Hotspot", "Taxon", "Phylum", "Class", "Km_to_nearest_edge_of_habitat", "Years_since_fragmentation_or_conversion")) %>%
-#   # calculate the total abundance within each study
-#   group_by(SS) %>%
-#   mutate(MaxAbundance = ifelse(Diversity_metric_type == "Abundance",
-#                                max(Total_abundance),
-#                                NA)) %>%
-#   ungroup() %>%
-#   # now calculate the rescaled abundance (abundance divided by the maximum within each study)
-#   mutate(RescaledAbundance = ifelse(
-#     Diversity_metric_type == "Abundance",
-#     Total_abundance/MaxAbundance,
-#     NA))
-# dim(sites)
-# # 22678 40
-# #The data contain 480 sources, 666 studies and 22678 sites
-# 
-# # save this data frame so you can come back to it #SAVED ON 13/01/2021 
-# write.csv(sites, 'Data/02_PREDICTSDivMetrics.csv', row.names = F)
-# 
-# #again, but splitting by taxa before calculating site level diversity metrics. 
-# 
+# Site level diversity metrics 
 # Including taxa ----------------------------------------------------------
-
 #create my_taxa column with 3 factors: Invertebrate, Vertebrate and Plants
 #remove fungi
 
@@ -97,7 +57,6 @@ diversity <- diversity %>%
                           'Glomeromycota' = 'Fungi',
                           'Onychophora' = 'Invertebrate')
   )
-
 
 table(diversity$my_taxa)
 
@@ -175,4 +134,3 @@ dim(sites_taxa)
 # 23187 34
 
 write.csv(sites_taxa, 'Data/02_PREDICTSDivMetrics_taxa.csv', row.names = F)
-

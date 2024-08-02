@@ -1,15 +1,12 @@
 # 04 - GLobal Models and Figs 
-# Author: Peggy Bevan
-# Date: 26/01/2021
 
-# In this script:
-#In this script:
-# Packages
-# Functions
+#Order of code
+# 1. Packages
+# 2. Functions
     #runmodels()
-# Data
+# 3. Data
   #Load predicts database & regional biome summary
-# Script
+# 4. Script
   #Selecting regional biomes 
     #(removing data deficient units based on sample size thresholds)
   #Select model structure
@@ -207,17 +204,62 @@ GlobalLUsel <- data.frame(Dataset = "Global_LUth1",
 )
 GlobalLUsel$deltaAIC <- GlobalLUsel$AIC - min(GlobalLUsel$AIC)
 
+#test land use selection for abundance 
+L0 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogAbund",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+
+l1 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogAbund",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse2*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+
+l2 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogAbund",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse3*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+
+l3 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogAbund",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse4*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+l4 <- StatisticalModels::GLMER(modelData = data_LUth.1, responseVar = "LogAbund",
+                               fitFamily = 'gaussian', fixedStruct = 'LandUse5*RB_tnc', 
+                               randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
+
+aic <- AIC(L0$model, l1$model, l2$model, l3$model, l4$model)
+R2 <- NULL
+R2[[1]] <- R2GLMER(L0$model)
+R2[[2]] <- R2GLMER(l1$model)
+R2[[3]] <- R2GLMER(l2$model)
+R2[[4]] <- R2GLMER(l3$model)
+R2[[5]] <- R2GLMER(l4$model)
+R2 <- rbindlist(R2)
+
+#bind model selection results
+GlobalLUsel_a <- data.frame(Dataset = "Global_LUth1", 
+                          Response = 'TotalAbundance', 
+                          Fixef = 'LandUse*RB', 
+                          LandUseVar = c("LandUse", "LandUse2", "LandUse3", "LandUse4", "LandUse5"), 
+                          AIC = aic$AIC, 
+                          R2Marginal = R2$marginal, 
+                          R2Conditional = R2$conditional, 
+                          n = nrow(data_LUth.1[(!is.na(data_LUth.1$LogAbund)),]),
+                          n_RB = n_distinct(data_LUth.1$RB_tnc)
+)
+GlobalLUsel_a$deltaAIC <- GlobalLUsel_a$AIC - min(GlobalLUsel_a$AIC)
+
+GlobalLUsel = rbind(GlobalLUsel, GlobalLUsel_a)
+
 #create supp table 3
 #small_border = fp_border(color="black", width = 2)
 
-GlobalLUsel = arrange(GlobalLUsel, AIC)
+GlobalLUsel = arrange(GlobalLUsel, Response, AIC)
 GlobalLUsel$R2Marginal= round(GlobalLUsel$R2Marginal, 2)
 GlobalLUsel$AIC= round(GlobalLUsel$AIC, 0)
 GlobalLUsel$deltaAIC= round(GlobalLUsel$deltaAIC, 2)
-TS3 = flextable(GlobalLUsel[,c(1:4,8,9,6,5,10)])
+TS3 = flextable(GlobalLUsel[,c(2:4,8,9,6,5,10)])
 TS3 <- theme_vanilla(TS3)
-TS3 <- fix_border_issues(TS3)
 TS3 = set_header_labels(TS3, "Fixef" = "Fixed effects", "R2Marginal" = "Marginal R2")
+TS3 <- merge_v(TS3, j = ~ Response)
+TS3 <- fix_border_issues(TS3)
 TS3
 
 save_as_image(TS3, 'Output/TableS3_LandUseVar.png')
@@ -338,8 +380,8 @@ globalmods = globalmods %>%
 globalmods$R2Marginal = round(globalmods$R2Marginal, 2)
 globalmods$AIC = round(globalmods$AIC, 0)
 globalmods$deltaAIC = round(globalmods$deltaAIC, 2)
-small_border = fp_border(color="black", width = 2)
-tiny_border = fp_border(color="black", width = 1.5)
+small_border = fp_border_default(color="black", width = 2)
+tiny_border = fp_border_default(color="black", width = 1.5)
 TS4 = flextable(globalmods[,c(11,2,3,8,9,6,5,10)])
 TS4 <- merge_v(TS4, j = ~ minSampleSize)
 TS4 <- theme_vanilla(TS4)
@@ -404,17 +446,17 @@ sample_results_df = sample_results_df %>%
   mutate(dAIC_2 = AIC - (min(AIC)))
 
 head(sample_results_df)
-# Plot Fig.3 --------------------------------------------------------------
 
+# Plot Fig.3 --------------------------------------------------------------
+sample_results_df = read.csv('Output/holdout_results_LUth25_taxa.csv')
+sample_results_df = sample_results_df %>%
+  arrange(AIC) %>%
+  group_by(sample, Response) %>%
+  mutate(dAIC_2 = AIC - (min(AIC)))
 # Fixing order of factors
 sample_results_df$Fixef = factor(sample_results_df$Fixef, levels = c("LandUse:RegionalBiome","LandUse:Biome", "LandUse:Realm", "LandUse"))
 # Boxplot of deltaAIC
 sample_results_df$Response = factor(sample_results_df$Response, levels = c('LogRichness', 'LogAbund'))
-
-ggplot(test) +
-  geom_bar(aes(x = ranking, fill = Fixef)) +
-  facet_wrap(~Response, scales = "free_y")
-
 
 labels = c('(a) Species richness', '(b) Total abundance')
 names(labels) <- c("LogRichness", "LogAbund")
@@ -422,13 +464,13 @@ names(labels) <- c("LogRichness", "LogAbund")
 ggplot(sample_results_df, aes(x = Fixef, y = dAIC_2, group = Fixef)) +
   #geom_point(aes(colour = ranking), position = 'jitter') +
   geom_boxplot(outlier.shape = NA) +
-  facet_wrap(~Response, scales = "free_y", labeller = labeller(Response = labels)) +
+  facet_wrap(~Response, scales = "free_y", labeller = labeller(Response = labels), ncol = 1) +
   theme_classic() +
   theme(strip.text.x = element_text(size = 10, hjust = 0),
         strip.background = element_blank(),
         text = element_text(size = 10, colour = 'black'),
         axis.title.x = element_text(vjust = -0.8, margin = margin(t = 0, r = 0, b = 15, l = 0)),
-        axis.text = element_text(size = 8, colour = 'black',margin = margin(t = 10, r = 0, b = 10, l = 0)),
+        axis.text = element_text(size = 7, colour = 'black',margin = margin(t = 10, r = 0, b = 10, l = 0)),
         axis.text.x = element_text(vjust = -0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
         )+
   scale_x_discrete(name = 'Fixed Effects', labels = c('LU:RB', 'LU:Biome', 'LU:Realm', 'LU')) +
@@ -436,6 +478,8 @@ ggplot(sample_results_df, aes(x = Fixef, y = dAIC_2, group = Fixef)) +
   scale_y_continuous(limits = c(0,1200))
 
 ggsave("Figs/Fig3_90pcstudies_25_taxa.png", dpi = 320, width = 14, height = 8, unit = 'cm')
+#saving for ecography
+ggsave("output/Eco_response/Fig2_90pcstudies_25_taxa.pdf", dpi = 320, width = 6.5, height = 13, unit = 'cm')
 
   # Summary stats -----------------------------------------------------------
 #With sample size threshold 25:
