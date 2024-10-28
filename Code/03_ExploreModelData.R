@@ -152,6 +152,10 @@ f1 <- fix_border_issues(f1)
 f1 <- bg(f1, bg = '#cccccc', i = ~ n_studies < 1, j = 2:11)
 f1
 #save_as_docx(f1, path = 'testtable.docx')
+#Create fig directory if it doesn't exist
+if dir.exists('Figs') == FALSE {
+  dir.create('Figs')
+}
 save_as_image(f1, path = 'Figs/01_RBSamplingEffort.png')
 save_as_docx(f1, pr_section = prop_section(page_size(orient = 'landscape')), path = 'Figs/01_RBSamplingEffort.docx')
 
@@ -173,6 +177,10 @@ TS1a
 TS1a = add_footer_row(TS1a, values = 'cont.', colwidths = 11)
 TS1a = align(TS1a, part = 'footer', align = 'right')
 #save_as_docx(f1, path = 'testtable.docx')
+
+if dir.exists('Output') == FALSE {
+  dir.create('Output')
+}
 save_as_image(TS1a, path = 'Output/TS1a_RegionalBiomeList.png')
 save_as_docx(TS1a, path = 'Output/TS1a_RegionalBiomeList.docx')
 

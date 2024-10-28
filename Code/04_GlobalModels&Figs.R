@@ -37,11 +37,24 @@ library(predictsFunctions)
 install_github("timnewbold/StatisticalModels")
 library(StatisticalModels)
 
+if !dir.exists('Figs') {
+  dir.create('Figs')
+}
+if !dir.exists('output') {
+  dir.create('output')
+}
+
 
 # Functions ---------------------------------------------------------------
 
 runmodels1 <- function(data, responseVar, LandUseVar = 'LandUse') {
-  m <- NULL
+    '''
+    Takes in biodiversity dataset from predicts and runs series of glmers.
+    Outputs table of AIC values and R2 values
+    responseVar = SpeciesRichness, LogRichness or LogAbund
+    LandUseVar = LandUse, LandUse1, LandUse2 etc.
+    '''
+    m <- NULL
   m[[1]] <- StatisticalModels::GLMER(modelData = data, responseVar = responseVar,
                                      fitFamily = 'gaussian', fixedStruct = paste(LandUseVar), 
                                      randomStruct = "(1|SS)+(1|SSB)+(1|my_taxa)", REML = F)
@@ -262,8 +275,8 @@ TS3 <- merge_v(TS3, j = ~ Response)
 TS3 <- fix_border_issues(TS3)
 TS3
 
-save_as_image(TS3, 'Output/TableS3_LandUseVar.png')
-save_as_docx(TS3, path = 'Output/TableS3_LandUseVar.docx')
+save_as_image(TS3, 'output/TableS3_LandUseVar.png')
+save_as_docx(TS3, path = 'output/TableS3_LandUseVar.docx')
 
 ##Adding biome and realm fixed effects
 m0 <- StatisticalModels::GLMER(modelData = data, responseVar = "LogRichness",
@@ -390,8 +403,8 @@ TS4 <- hline(TS4, border = small_border, i = c(8,16,24,32))
 TS4 <- hline(TS4, border = tiny_border, i = c(4,12,20,28, 36))
 TS4 = set_header_labels(TS4, "minSampleSize" = 'Min sample size', "Fixef"= "Fixed effects", 'R2Marginal' = 'Marginal R2')
 TS4
-save_as_image(TS4, 'Output/TableS4_SampleSize.png')
-save_as_docx(TS4, path = 'Output/TableS4_SampleSize.docx')
+save_as_image(TS4, 'output/TableS4_SampleSize.png')
+save_as_docx(TS4, path = 'output/TableS4_SampleSize.docx')
 
 # Hold-out Model ----------------------------------------------------------------
 #Running a hold-out model. Run the model 100 times, each time removed 5% of studies.
@@ -428,7 +441,7 @@ for (i in 1:N) {
 sample_results_df = rbindlist(sample_results)
 
 # Save results
-write.csv(sample_results_df, file = "Output/holdout_results_LUth25_taxa.csv", row.names = F)
+write.csv(sample_results_df, file = "output/holdout_results_LUth25_taxa.csv", row.names = F)
 
 #need to give each model in each iteration a rank, based on deltaAIC. 
 #so rank 1 will be the model with the most support
@@ -448,7 +461,7 @@ sample_results_df = sample_results_df %>%
 head(sample_results_df)
 
 # Plot Fig.3 --------------------------------------------------------------
-sample_results_df = read.csv('Output/holdout_results_LUth25_taxa.csv')
+sample_results_df = read.csv('output/holdout_results_LUth25_taxa.csv')
 sample_results_df = sample_results_df %>%
   arrange(AIC) %>%
   group_by(sample, Response) %>%
