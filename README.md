@@ -14,7 +14,9 @@ Analysing biodiversity responses to land use change across regional biomes
 
 The scripts are ordered according to the analysis process, and should be run in this order to make sure new data sets are created.
 
-The entire analysis can be run by calling 'RunAllScriptsHere.R'. This should take approximately 2.5 hours depending on compute power.**Package requirements:**
+The entire analysis can be run by calling 'RunAllScriptsHere.R'. This should take approximately 2.5 hours depending on compute power.
+
+**Package requirements:**
 
 *The versions listed here are the versions used at publication, but future versions may be useable.*
 
