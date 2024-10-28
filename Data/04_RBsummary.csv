@@ -1,65 +1,65 @@
-"RB_tnc","Realm_code","Biome_num","Realm","Biome","n_studies","n_sources","n_sites","n_ecoregions","n_taxa","n_country","t_ecoregions","p_ecoregions","Primary Vegetation","Secondary Vegetation","Plantation forest","Cropland","Pasture","Agriculture","Plant","Fungi","Herptile","Invertebrate","Bird","Mammal","Vertebrate","sites.th1","sites.th25","sites.th50","PV.th1","PV.th5","PV.th25","PV.th50","Ag.th1","Ag.th5","Ag.th25","Ag.th50"
-"AA1","AA",1,"Australasia","Tropical & Subtropical Moist Broadleaf Forests",15,9,178,5,14,4,28,0.18,58,31,82,3,4,89,78,NA,NA,59,35,6,41,1,1,1,1,1,1,1,1,1,1,1
-"AA10","AA",10,"Australasia","Montane Grasslands & Shrublands",7,6,461,1,6,1,3,0.33,228,33,NA,NA,200,200,NA,NA,NA,461,NA,NA,0,1,1,1,1,1,1,1,1,1,1,1
-"AA11","AA",11,"Australasia","Tundra",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AA12","AA",12,"Australasia","Mediterranean Forests, Woodlands & Scrub",4,6,140,2,3,1,10,0.2,72,68,NA,NA,NA,0,NA,48,76,16,NA,NA,76,1,1,1,1,1,1,1,0,0,0,0
-"AA13","AA",13,"Australasia","Deserts & Xeric Shrublands",1,1,30,2,1,1,10,0.2,18,NA,NA,NA,12,12,NA,NA,NA,NA,30,NA,30,1,1,0,1,1,0,0,1,1,0,0
-"AA14","AA",14,"Australasia","Mangroves",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AA2","AA",2,"Australasia","Tropical & Subtropical Dry Broadleaf Forests",0,0,0,0,0,0,4,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AA4","AA",4,"Australasia","Temperate Broadleaf & Mixed Forests",16,14,336,6,15,2,14,0.43,85,34,66,29,122,217,NA,NA,NA,324,NA,12,12,1,1,1,1,1,1,1,1,1,1,1
-"AA7","AA",7,"Australasia","Tropical & Subtropical Grasslands, Savannas & Shrublands",13,9,502,4,13,1,9,0.44,255,175,8,2,62,72,1,NA,229,69,203,NA,432,1,1,1,1,1,1,1,1,1,1,1
-"AA8","AA",8,"Australasia","Temperate Grasslands, Savannas & Shrublands",11,8,503,2,11,2,3,0.67,180,80,6,6,231,243,390,NA,NA,107,6,NA,6,1,1,1,1,1,1,1,1,1,1,1
-"AN11","AN",11,"Antarctica","Tundra",0,0,0,0,0,0,4,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AT1","AT",1,"Afrotropic","Tropical & Subtropical Moist Broadleaf Forests",44,36,2081,19,39,15,30,0.63,782,444,440,254,161,855,534,NA,70,191,1007,279,1356,1,1,1,1,1,1,1,1,1,1,1
-"AT10","AT",10,"Afrotropic","Montane Grasslands & Shrublands",13,9,395,5,14,3,15,0.33,139,76,144,9,27,180,321,NA,6,8,60,NA,66,1,1,1,1,1,1,1,1,1,1,1
-"AT12","AT",12,"Afrotropic","Mediterranean Forests, Woodlands & Scrub",3,3,52,2,4,1,3,0.67,42,1,7,2,NA,9,3,NA,NA,10,39,NA,39,1,1,1,1,1,1,0,1,1,0,0
-"AT13","AT",13,"Afrotropic","Deserts & Xeric Shrublands",8,6,117,4,8,3,20,0.2,27,27,NA,2,61,63,57,NA,12,14,NA,34,46,1,1,1,1,1,1,0,1,1,1,1
-"AT14","AT",14,"Afrotropic","Mangroves",0,0,0,0,0,0,5,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AT2","AT",2,"Afrotropic","Tropical & Subtropical Dry Broadleaf Forests",2,2,44,1,2,1,3,0.33,19,22,3,NA,NA,3,NA,NA,9,NA,35,NA,44,1,1,0,1,1,0,0,1,0,0,0
-"AT7","AT",7,"Afrotropic","Tropical & Subtropical Grasslands, Savannas & Shrublands",26,19,1663,7,20,7,26,0.27,634,159,201,472,197,870,521,NA,6,236,805,95,906,1,1,1,1,1,1,1,1,1,1,1
-"AT8","AT",8,"Afrotropic","Temperate Grasslands, Savannas & Shrublands",0,0,0,0,0,0,3,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"AT9","AT",9,"Afrotropic","Flooded Grasslands & Savannas",0,0,0,0,0,0,8,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"IM1","IM",1,"Indo-Malay","Tropical & Subtropical Moist Broadleaf Forests",63,53,1781,22,53,11,72,0.31,694,622,397,67,1,465,622,NA,25,478,223,433,681,1,1,1,1,1,1,1,1,1,1,1
-"IM10","IM",10,"Indo-Malay","Montane Grasslands & Shrublands",2,2,22,1,2,1,1,1,22,NA,NA,NA,NA,0,NA,NA,NA,19,NA,3,3,1,0,0,1,1,0,0,0,0,0,0
-"IM13","IM",13,"Indo-Malay","Deserts & Xeric Shrublands",0,0,0,0,0,0,4,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"IM14","IM",14,"Indo-Malay","Mangroves",0,0,0,0,0,0,6,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"IM2","IM",2,"Indo-Malay","Tropical & Subtropical Dry Broadleaf Forests",3,2,90,1,2,1,12,0.08,90,NA,NA,NA,NA,0,60,NA,NA,NA,30,NA,30,1,1,1,1,1,1,1,0,0,0,0
-"IM3","IM",3,"Indo-Malay","Tropical & Subtropical Coniferous Forests",2,2,43,1,2,2,4,0.25,43,NA,NA,NA,NA,0,40,NA,NA,NA,3,NA,3,1,1,0,1,1,1,0,0,0,0,0
-"IM4","IM",4,"Indo-Malay","Temperate Broadleaf & Mixed Forests",3,3,74,2,3,1,3,0.67,66,8,NA,NA,NA,0,74,NA,NA,NA,NA,NA,0,1,1,1,1,1,1,1,0,0,0,0
-"IM5","IM",5,"Indo-Malay","Temperate Conifer Forests",1,1,1,1,1,1,2,0.5,1,NA,NA,NA,NA,0,1,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"IM7","IM",7,"Indo-Malay","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"IM9","IM",9,"Indo-Malay","Flooded Grasslands & Savannas",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"NA11","NA",11,"Nearctic","Tundra",0,0,0,0,0,0,11,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"NA12","NA",12,"Nearctic","Mediterranean Forests, Woodlands & Scrub",2,1,20,1,1,1,3,0.33,20,NA,NA,NA,NA,0,NA,NA,NA,20,NA,NA,0,1,0,0,1,1,0,0,0,0,0,0
-"NA13","NA",13,"Nearctic","Deserts & Xeric Shrublands",2,2,16,2,2,2,13,0.15,8,3,NA,5,NA,5,NA,NA,NA,16,NA,NA,0,1,0,0,1,1,0,0,1,0,0,0
-"NA2","NA",2,"Nearctic","Tropical & Subtropical Dry Broadleaf Forests",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"NA3","NA",3,"Nearctic","Tropical & Subtropical Coniferous Forests",1,1,1,1,1,1,3,0.33,NA,1,NA,NA,NA,0,NA,NA,NA,1,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"NA4","NA",4,"Nearctic","Temperate Broadleaf & Mixed Forests",24,17,856,13,15,2,21,0.62,417,242,21,149,27,197,22,NA,7,377,450,NA,457,1,1,1,1,1,1,1,1,1,1,1
-"NA5","NA",5,"Nearctic","Temperate Conifer Forests",2,2,128,2,2,2,25,0.08,NA,63,NA,NA,65,65,NA,NA,NA,128,NA,NA,0,1,1,1,0,0,0,0,1,1,1,1
-"NA6","NA",6,"Nearctic","Boreal Forests/Taiga",16,7,687,4,12,1,11,0.36,602,52,12,14,7,33,12,NA,NA,400,60,215,275,1,1,1,1,1,1,1,1,1,1,0
-"NA7","NA",7,"Nearctic","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,1,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"NA8","NA",8,"Nearctic","Temperate Grasslands, Savannas & Shrublands",5,5,83,3,5,2,12,0.25,42,35,NA,2,4,6,NA,NA,53,30,NA,NA,53,1,1,1,1,1,1,0,1,1,0,0
-"NT1","NT",1,"Neotropic","Tropical & Subtropical Moist Broadleaf Forests",118,97,2274,46,115,17,81,0.57,760,740,339,133,302,774,208,11,585,896,390,184,1159,1,1,1,1,1,1,1,1,1,1,1
-"NT10","NT",10,"Neotropic","Montane Grasslands & Shrublands",2,1,2,1,1,1,9,0.11,NA,NA,NA,2,NA,2,NA,NA,NA,2,NA,NA,0,1,0,0,0,0,0,0,1,0,0,0
-"NT12","NT",12,"Neotropic","Mediterranean Forests, Woodlands & Scrub",1,1,8,1,1,1,1,1,NA,4,NA,4,NA,4,NA,NA,NA,8,NA,NA,0,1,0,0,0,0,0,0,1,0,0,0
-"NT13","NT",13,"Neotropic","Deserts & Xeric Shrublands",3,3,18,2,3,2,15,0.13,2,13,NA,2,1,3,NA,3,NA,15,NA,NA,0,1,0,0,1,0,0,0,1,0,0,0
-"NT14","NT",14,"Neotropic","Mangroves",7,6,30,4,6,5,7,0.57,7,15,NA,8,NA,8,NA,NA,NA,28,1,1,2,1,1,0,1,1,0,0,1,1,0,0
-"NT2","NT",2,"Neotropic","Tropical & Subtropical Dry Broadleaf Forests",16,13,236,10,14,8,31,0.32,28,65,19,71,53,143,3,NA,15,199,10,9,34,1,1,1,1,1,1,0,1,1,1,1
-"NT3","NT",3,"Neotropic","Tropical & Subtropical Coniferous Forests",4,2,322,2,4,2,10,0.2,37,180,37,5,63,105,89,NA,NA,154,79,NA,79,1,1,1,1,1,1,0,1,1,1,1
-"NT4","NT",4,"Neotropic","Temperate Broadleaf & Mixed Forests",16,12,577,2,14,2,4,0.5,301,59,105,NA,112,217,324,NA,16,12,47,178,241,1,1,1,1,1,1,1,1,1,1,1
-"NT7","NT",7,"Neotropic","Tropical & Subtropical Grasslands, Savannas & Shrublands",16,14,190,3,18,4,8,0.38,84,12,63,14,17,94,NA,NA,23,66,5,96,124,1,1,1,1,1,1,1,1,1,1,1
-"NT8","NT",8,"Neotropic","Temperate Grasslands, Savannas & Shrublands",7,6,796,3,6,1,4,0.75,21,87,11,348,329,688,412,NA,NA,NA,380,4,384,1,1,1,1,1,0,0,1,1,1,1
-"NT9","NT",9,"Neotropic","Flooded Grasslands & Savannas",1,1,12,1,1,1,9,0.11,NA,NA,NA,NA,12,12,NA,NA,NA,12,NA,NA,0,1,0,0,0,0,0,0,1,1,0,0
-"OC1","OC",1,"Oceania","Tropical & Subtropical Moist Broadleaf Forests",4,4,263,3,4,3,17,0.18,91,154,NA,16,2,18,NA,NA,NA,229,2,32,34,1,1,1,1,1,1,1,1,1,0,0
-"OC2","OC",2,"Oceania","Tropical & Subtropical Dry Broadleaf Forests",1,1,44,1,1,1,4,0.25,NA,38,NA,NA,6,6,NA,NA,NA,44,NA,NA,0,1,1,0,0,0,0,0,1,1,0,0
-"OC7","OC",7,"Oceania","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,3,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"PA1","PA",1,"Palearctic","Tropical & Subtropical Moist Broadleaf Forests",0,0,0,0,0,0,2,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"PA10","PA",10,"Palearctic","Montane Grasslands & Shrublands",4,3,54,3,4,3,22,0.14,54,NA,NA,NA,NA,0,2,NA,NA,NA,6,46,52,1,1,1,1,1,1,1,0,0,0,0
-"PA11","PA",11,"Palearctic","Tundra",4,2,24,3,3,2,14,0.21,13,NA,NA,NA,11,11,NA,3,NA,NA,21,NA,21,1,0,0,1,1,0,0,1,1,0,0
-"PA12","PA",12,"Palearctic","Mediterranean Forests, Woodlands & Scrub",39,29,1624,13,33,9,22,0.59,341,662,175,325,121,621,489,249,NA,296,572,18,590,1,1,1,1,1,1,1,1,1,1,1
-"PA13","PA",13,"Palearctic","Deserts & Xeric Shrublands",3,3,71,3,3,2,33,0.09,21,7,21,22,NA,43,27,NA,NA,44,NA,NA,0,1,1,1,1,1,0,0,1,1,1,0
-"PA4","PA",4,"Palearctic","Temperate Broadleaf & Mixed Forests",131,84,3986,23,84,22,46,0.5,423,1159,184,1203,1017,2404,1009,18,42,2699,189,29,260,1,1,1,1,1,1,1,1,1,1,1
-"PA5","PA",5,"Palearctic","Temperate Conifer Forests",12,9,279,6,12,9,21,0.29,127,98,4,5,45,54,53,4,NA,93,124,5,129,1,1,1,1,1,1,1,1,1,1,1
-"PA6","PA",6,"Palearctic","Boreal Forests/Taiga",8,7,134,1,7,3,11,0.09,72,54,NA,5,3,8,35,1,NA,98,NA,NA,0,1,1,1,1,1,1,1,1,1,0,0
-"PA8","PA",8,"Palearctic","Temperate Grasslands, Savannas & Shrublands",0,0,0,0,0,0,18,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
-"PA9","PA",9,"Palearctic","Flooded Grasslands & Savannas",0,0,0,0,0,0,8,0,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,0,0,0,0,0,0,0,0,0,0,0,0
+"RB_tnc","Realm_code","Biome_num","Realm","Biome","n_studies","n_sources","n_sites","n_ecoregions","n_taxa","n_country","t_ecoregions","p_ecoregions"
+"IM1","IM",1,"Indo-Malay","Tropical & Subtropical Moist Broadleaf Forests",59,50,1702,20,3,11,72,0.28
+"PA1","PA",1,"Palearctic","Tropical & Subtropical Moist Broadleaf Forests",0,0,0,0,0,0,2,0
+"AA1","AA",1,"Australasia","Tropical & Subtropical Moist Broadleaf Forests",15,9,178,5,3,4,28,0.18
+"NT1","NT",1,"Neotropic","Tropical & Subtropical Moist Broadleaf Forests",116,95,2249,43,4,17,81,0.53
+"AT1","AT",1,"Afrotropic","Tropical & Subtropical Moist Broadleaf Forests",44,36,2081,19,4,15,30,0.63
+"OC1","OC",1,"Oceania","Tropical & Subtropical Moist Broadleaf Forests",3,3,231,2,2,2,17,0.12
+"IM2","IM",2,"Indo-Malay","Tropical & Subtropical Dry Broadleaf Forests",3,2,90,1,2,1,12,0.08
+"AA2","AA",2,"Australasia","Tropical & Subtropical Dry Broadleaf Forests",0,0,0,0,0,0,4,0
+"NA2","NA",2,"Nearctic","Tropical & Subtropical Dry Broadleaf Forests",0,0,0,0,0,0,1,0
+"NT2","NT",2,"Neotropic","Tropical & Subtropical Dry Broadleaf Forests",15,12,232,9,3,8,31,0.29
+"AT2","AT",2,"Afrotropic","Tropical & Subtropical Dry Broadleaf Forests",2,2,44,1,1,1,3,0.33
+"OC2","OC",2,"Oceania","Tropical & Subtropical Dry Broadleaf Forests",1,1,44,1,1,1,4,0.25
+"IM3","IM",3,"Indo-Malay","Tropical & Subtropical Coniferous Forests",2,2,43,1,2,2,4,0.25
+"NA3","NA",3,"Nearctic","Tropical & Subtropical Coniferous Forests",1,1,1,1,1,1,3,0.33
+"NT3","NT",3,"Neotropic","Tropical & Subtropical Coniferous Forests",4,2,322,2,3,2,10,0.2
+"IM4","IM",4,"Indo-Malay","Temperate Broadleaf & Mixed Forests",3,3,74,2,2,1,3,0.67
+"PA4","PA",4,"Palearctic","Temperate Broadleaf & Mixed Forests",127,81,3941,23,4,22,46,0.5
+"AA4","AA",4,"Australasia","Temperate Broadleaf & Mixed Forests",16,14,336,6,2,2,14,0.43
+"NA4","NA",4,"Nearctic","Temperate Broadleaf & Mixed Forests",24,17,856,13,3,2,21,0.62
+"NT4","NT",4,"Neotropic","Temperate Broadleaf & Mixed Forests",16,12,577,2,4,2,4,0.5
+"IM5","IM",5,"Indo-Malay","Temperate Conifer Forests",1,1,1,1,1,1,2,0.5
+"PA5","PA",5,"Palearctic","Temperate Conifer Forests",12,9,279,6,4,9,21,0.29
+"NA5","NA",5,"Nearctic","Temperate Conifer Forests",2,2,128,2,1,2,25,0.08
+"PA6","PA",6,"Palearctic","Boreal Forests/Taiga",8,7,134,1,3,3,11,0.09
+"NA6","NA",6,"Nearctic","Boreal Forests/Taiga",15,7,587,4,3,1,11,0.36
+"IM7","IM",7,"Indo-Malay","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,1,0
+"AA7","AA",7,"Australasia","Tropical & Subtropical Grasslands, Savannas & Shrublands",13,9,502,4,3,1,9,0.44
+"NA7","NA",7,"Nearctic","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,1,0
+"NT7","NT",7,"Neotropic","Tropical & Subtropical Grasslands, Savannas & Shrublands",16,14,190,3,2,4,8,0.38
+"AT7","AT",7,"Afrotropic","Tropical & Subtropical Grasslands, Savannas & Shrublands",25,18,1614,6,3,7,26,0.23
+"OC7","OC",7,"Oceania","Tropical & Subtropical Grasslands, Savannas & Shrublands",0,0,0,0,0,0,3,0
+"PA8","PA",8,"Palearctic","Temperate Grasslands, Savannas & Shrublands",0,0,0,0,0,0,18,0
+"AA8","AA",8,"Australasia","Temperate Grasslands, Savannas & Shrublands",11,8,503,2,4,2,3,0.67
+"NA8","NA",8,"Nearctic","Temperate Grasslands, Savannas & Shrublands",5,5,83,3,2,2,12,0.25
+"NT8","NT",8,"Neotropic","Temperate Grasslands, Savannas & Shrublands",7,6,796,3,3,1,4,0.75
+"AT8","AT",8,"Afrotropic","Temperate Grasslands, Savannas & Shrublands",0,0,0,0,0,0,3,0
+"IM9","IM",9,"Indo-Malay","Flooded Grasslands & Savannas",0,0,0,0,0,0,1,0
+"PA9","PA",9,"Palearctic","Flooded Grasslands & Savannas",0,0,0,0,0,0,8,0
+"NT9","NT",9,"Neotropic","Flooded Grasslands & Savannas",1,1,12,1,1,1,9,0.11
+"AT9","AT",9,"Afrotropic","Flooded Grasslands & Savannas",0,0,0,0,0,0,8,0
+"IM10","IM",10,"Indo-Malay","Montane Grasslands & Shrublands",2,2,22,1,2,1,1,1
+"PA10","PA",10,"Palearctic","Montane Grasslands & Shrublands",3,3,51,3,2,3,22,0.14
+"AA10","AA",10,"Australasia","Montane Grasslands & Shrublands",5,5,269,1,1,1,3,0.33
+"NT10","NT",10,"Neotropic","Montane Grasslands & Shrublands",2,1,2,1,1,1,9,0.11
+"AT10","AT",10,"Afrotropic","Montane Grasslands & Shrublands",13,9,395,5,3,3,15,0.33
+"PA11","PA",11,"Palearctic","Tundra",4,2,24,3,2,2,14,0.21
+"AA11","AA",11,"Australasia","Tundra",0,0,0,0,0,0,1,0
+"NA11","NA",11,"Nearctic","Tundra",0,0,0,0,0,0,11,0
+"AN11","AN",11,"Antarctica","Tundra",0,0,0,0,0,0,4,0
+"PA12","PA",12,"Palearctic","Mediterranean Forests, Woodlands & Scrub",38,28,1606,13,4,9,22,0.59
+"AA12","AA",12,"Australasia","Mediterranean Forests, Woodlands & Scrub",4,6,140,2,3,1,10,0.2
+"NA12","NA",12,"Nearctic","Mediterranean Forests, Woodlands & Scrub",2,1,20,1,1,1,3,0.33
+"NT12","NT",12,"Neotropic","Mediterranean Forests, Woodlands & Scrub",1,1,8,1,1,1,1,1
+"AT12","AT",12,"Afrotropic","Mediterranean Forests, Woodlands & Scrub",3,3,52,2,3,1,3,0.67
+"IM13","IM",13,"Indo-Malay","Deserts & Xeric Shrublands",0,0,0,0,0,0,4,0
+"PA13","PA",13,"Palearctic","Deserts & Xeric Shrublands",3,3,71,3,2,2,33,0.09
+"AA13","AA",13,"Australasia","Deserts & Xeric Shrublands",1,1,30,2,1,1,10,0.2
+"NA13","NA",13,"Nearctic","Deserts & Xeric Shrublands",2,2,16,2,1,2,13,0.15
+"NT13","NT",13,"Neotropic","Deserts & Xeric Shrublands",3,3,18,2,2,2,15,0.13
+"AT13","AT",13,"Afrotropic","Deserts & Xeric Shrublands",8,6,117,4,3,3,20,0.2
+"IM14","IM",14,"Indo-Malay","Mangroves",0,0,0,0,0,0,6,0
+"AA14","AA",14,"Australasia","Mangroves",0,0,0,0,0,0,1,0
+"NT14","NT",14,"Neotropic","Mangroves",7,6,30,4,2,5,7,0.57
+"AT14","AT",14,"Afrotropic","Mangroves",0,0,0,0,0,0,5,0
