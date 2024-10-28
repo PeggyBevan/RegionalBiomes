@@ -14,7 +14,7 @@ Analysing biodiversity responses to land use change across regional biomes
 
 The scripts are ordered according to the analysis process, and should be run in this order to make sure new data sets are created.
 
-## **Package requirements:**
+The entire analysis can be run by calling 'RunAllScriptsHere.R'. This should take approximately 2.5 hours depending on compute power.**Package requirements:**
 
 *The versions listed here are the versions used at publication, but future versions may be useable.*
 
@@ -74,20 +74,14 @@ PredictsData - original database from predicts website terr-ecoregions-TNX The T
 
 04_GlobalModels&Figs.R - run global model of species richness/abundance with land use change - create figures for: biodiversity change with land use - biodiversity change with land use and regional biome - biodiversity change with land use and regional biome and taxa
 
-05_Biome1_RunModels.R - Subset biome 1 and do any data tidying (remove data-deficient areas) - run model and model selection against species richness and abundance - plot models - run taxon specific models for figure 7 (created in script 07)
-
-06_Biome4_RunModels.R - repeat 05 but with biome 4
-
-07_Biome7_RunModels.R - repeat 05 but with biome 7 - Create figure 7 - taxon/regional biome interactions.
-
-BiomeModelFunctions.R - a list of functions used to run a series of models, called in scripts 5-7.
+05_BiomeCaseStudies.R - Subset predicts database to 3 biomes, run regional biome model on species richness and abundance and plot predictions in change in metric over land-use change. Explore the impact of evening out sample sizes. Explore the impact of adding taxon to the species richness model.
 
 PredictGLMERfunction.R - a copy of the PredictGLMER function from the StatisticalModels Package, called in case there are issues loading this package.
 
 ### **Figs//**
 
--   figures produced from scripts
+-   Directory for saving figures produced from scripts (created during runtime)
 
 ### **Output//**
 
-Any dataframes saved from analysis - primarily model selection tables used in supplementary information.
+-   Directory for any dataframes saved from analysis - primarily model selection tables used in supplementary information. (created during runtime)
