@@ -1,11 +1,3 @@
----
-title: "Regional Biomes Framework"
-author: "Anonymous"
-output:
-  html_document:
-    df_print: paged
----
-
 # RegionalBiomes
 
 Analysing biodiversity responses to land use change across regional biomes
@@ -18,13 +10,13 @@ The entire analysis can be run by calling 'RunAllScriptsHere.R'. This should tak
 
 **Package requirements:**
 
-*The versions listed here are the versions used at publication, but future versions may be useable.*
+*The versions listed here are the versions used at publication, but future versions may be usable.*
 
 -   R Version - 4.0.4
 
 -   dplyr Version 1.1.3
 
--   rgdal Version 1.5-23
+-   sf Version 1.0-16
 
 -   devtools Version 2.4.0
 
@@ -60,11 +52,17 @@ The entire analysis can be run by calling 'RunAllScriptsHere.R'. This should tak
 
 ### **Data//**
 
-PredictsData - original database from predicts website terr-ecoregions-TNX The TNC egoregion map. It has the same ecoregions as those in the PREDICTS database. I got it from here: <http://maps.tnc.org/gis_data.html>
+Data must be downloaded from original sources and placed in this folder
 
-02_PREDICTSDivMetrics.csv - created in script 01. - baseline dataset to use - do not edit
+#### PREDICTS data
 
-03_PREDICTSModelData.csv - created in script 02 - urban land use and 'cannot decide' land uses have been removed. - extra variables added - land use (1-5), land use:use intensity (1-5), log richness, log abundance, common taxa
+This project uses data from the 2016 release of the PREDICTS database (Hudson et al., 2016). The dataset can be found at <https://doi.org/10.5519/0066354>
+
+This analysis starts with the RDS format of the data, called 'database.rds'. Place within a folder called 'PredictsData'
+
+#### **Terrestrial Ecoregions of the World Map**
+
+Ecoregion data was originally downloaded from the The Nature Conservancy's (TNC) conservation atlas (<http://maps.tnc.org/gis_data.html>). At the time of publishing, the link to this dataset is broken , but the same dataset can be downloaded from ResourceWatch [here](https://resourcewatch.org/data/explore/bio021a-Terrestrial-Ecoregions?section=Discover&selectedCollection=&zoom=3&lat=0&lng=0&pitch=0&bearing=0&basemap=dark&labels=light&layers=%255B%257B%2522dataset%2522%253A%2522d0968f74-f5c1-40a1-b2b5-5bac5de5cb15%2522%252C%2522opacity%2522%253A1%252C%2522layer%2522%253A%252201152647-80b6-41fb-9ebc-48a5f2411327%2522%257D%255D&aoi=&page=1&sort=most-viewed&sortDirection=-1). Note, the labelling of ecoregions in this dataset follows the same format as the PREDICTS database. Other ecoregions maps are available, for example from [WWF](https://www.worldwildlife.org/publications/terrestrial-ecoregions-of-the-world), but will require some editing to fit with the version of the PREDICTS database used here. All ecoregion maps are based on Olson et al., 2001. 
 
 ### **Scripts//**
 
