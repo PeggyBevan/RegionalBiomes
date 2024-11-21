@@ -21,7 +21,7 @@
 
 
 # Packages ----------------------------------------------------------------
-library(rgdal)  # readOGR() spTransform()
+library(sf)  # readOGR() spTransform()
 library(dplyr) # n_distinct(), count()
 library(flextable) #flextable()
 library(tidyr) #spread()
@@ -31,15 +31,16 @@ library(officer) #prop_section, for saving tables as .docx
 
 BD <- readRDS('Data/03_PREDICTSModelData_taxa.rds')
 
-# The TNC egoregion map has the same ecoregions as those in the PREDICTS databse. I got it from here: http://maps.tnc.org/gis_data.html
-tnc_ecoregions <- readOGR(dsn = 'Data/terr-ecoregions-TNC', layer = 'tnc_terr_ecoregions')
+
+#The TNC egoregion map has the same ecoregions as those in the PREDICTS databse. I got it from here: http://maps.tnc.org/gis_data.html
+tnc_ecoregions <- st_read('Data/terr-ecoregions-TNC/tnc_terr_ecoregions.shp')
 # 814 features, 16 fields
 
 
 # Script ------------------------------------------------------------------
 
 n_rb <- n_distinct(BD$RB_tnc)
- #There are 46 regional biomes represented by the Predicts database.
+#There are 46 regional biomes represented by the Predicts database.
 
 #Spatial Representation of regional biomes within the PREDICTS database
 #I want to look at: 
@@ -52,10 +53,10 @@ n_rb <- n_distinct(BD$RB_tnc)
 # In this shapefile, regional biomes are given a code with their geographic realm and biome number. For example, Tropical and Subtropical Moist Broadleaf forest (biome 01) in the indo-malay realm has the code **IM1**.
 
 #list all RBs
-rb_tncCodes<-unique(tnc_ecoregions@data$RealmMHT)
+rb_Codes<-unique(tnc_ecoregions$RealmMHT)
 
 # make dataframe with realm code and biome
-ecoregs <- data.frame('RB_tnc' = unique(tnc_ecoregions@data$RealmMHT)) %>%
+ecoregs <- data.frame('RB_tnc' = unique(tnc_ecoregions$RealmMHT)) %>%
   mutate(Realm_code = substr(RB_tnc, 1,2),
          Biome_num = ifelse(nchar(as.character(RB_tnc))<=3, 
                             substr(RB_tnc, 3,3),
@@ -108,7 +109,7 @@ for (i in (1:nrow(ecoregs))) {
   ecoregs$n_ecoregions[i] = n_distinct(BD$Ecoregion[BD$RB_tnc==rb])
   ecoregs$n_taxa[i] = n_distinct(BD$my_taxa[BD$RB_tnc==rb])
   ecoregs$n_country[i] =n_distinct(BD$Country[BD$RB_tnc==rb])
-  ecoregs$t_ecoregions[i] = n_distinct(tnc_ecoregions@data$ECO_NAME[tnc_ecoregions@data$RealmMHT==tnc_code])
+  ecoregs$t_ecoregions[i] = n_distinct(tnc_ecoregions$ECO_NAME[tnc_ecoregions$RealmMHT==tnc_code])
   ecoregs$p_ecoregions[i] = round(ecoregs$n_ecoregions[i]/ecoregs$t_ecoregions[i], 2)
 }
 
